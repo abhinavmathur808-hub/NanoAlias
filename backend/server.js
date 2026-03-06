@@ -17,6 +17,7 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
+app.set("trust proxy", 1); // Trust Render's reverse proxy for accurate IP resolution
 
 connectDB();
 connectRedis();
