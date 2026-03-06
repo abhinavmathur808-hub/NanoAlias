@@ -426,9 +426,17 @@ export default function Dashboard() {
             },
         ];
 
-        // Compute position from the trigger button
+        // Smart positioning — flip upward if not enough room below
+        const MENU_HEIGHT = 250;
+        const GAP = 8;
         const rect = shareBtnRef.current?.getBoundingClientRect();
-        const top = rect ? rect.bottom + 8 : 0;
+        const spaceBelow = rect ? window.innerHeight - rect.bottom : Infinity;
+        const openUpward = spaceBelow < MENU_HEIGHT + GAP;
+        const top = rect
+            ? openUpward
+                ? rect.top - MENU_HEIGHT - GAP   // above the button
+                : rect.bottom + GAP                // below the button
+            : 0;
         const left = rect ? rect.left : 0;
 
         return createPortal(
