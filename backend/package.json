@@ -27,9 +27,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.0",
     "nanoid": "^5.0.7",
-    "nodemailer": "^6.9.14",
     "qrcode": "^1.5.4",
     "rate-limit-redis": "^4.3.1",
+    "resend": "^6.9.3",
     "ua-parser-js": "^1.0.38",
     "xss": "^1.0.15"
   },
