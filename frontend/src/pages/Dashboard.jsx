@@ -39,7 +39,7 @@ import {
 import { useGetMyUrlsQuery, useCreateUrlMutation, useDeleteUrlMutation } from "../store/urlSlice";
 import QrModal from "../components/QrModal";
 
-const BASE_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || window.location.origin;
+const BASE_URL = "https://nanoalias.com";
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -395,7 +395,7 @@ export default function Dashboard() {
     // Social share dropdown renderer — uses Portal to escape overflow clipping
     const renderShareMenu = (url) => {
         const alias = url.customAlias || url.shortCode;
-        const fullUrl = `https://nanoalias.onrender.com/${alias}`;
+        const fullUrl = `${BASE_URL}/${alias}`;
         const encoded = encodeURIComponent(fullUrl);
         const text = encodeURIComponent("Check out this link!");
         const channels = [

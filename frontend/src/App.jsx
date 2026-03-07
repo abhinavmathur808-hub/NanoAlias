@@ -15,6 +15,8 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
+import RedirectHandler from "./components/RedirectHandler";
+
 function App() {
     return (
         <Routes>
@@ -39,6 +41,7 @@ function App() {
                 </Route>
             </Route>
 
+            <Route path="/:alias" element={<RedirectHandler />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     );
