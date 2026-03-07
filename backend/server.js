@@ -28,7 +28,12 @@ app.use(helmet());
 // ── CORS ───────────────────────────────────────────
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: [
+            "http://localhost:5173",
+            "https://nanoalias.vercel.app",
+            "https://nanoalias.com",
+            "https://www.nanoalias.com",
+        ],
         credentials: true,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
