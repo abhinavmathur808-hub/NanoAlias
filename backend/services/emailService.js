@@ -4,8 +4,8 @@ const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // IMPORTANT: Until you verify a custom domain in Resend, 
-// you MUST use 'onboarding@resend.dev' as the 'from' address.
-const senderEmail = "NanoAlias <onboarding@resend.dev>";
+// Production sender address using our verified custom domain.
+const senderEmail = "NanoAlias <noreply@nanoalias.com>";
 
 exports.sendVerificationEmail = async (to, token) => {
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${token}`;
