@@ -202,7 +202,7 @@ export default function Landing() {
             <DiamondHalo />
 
             {/* ── Tagline ── */}
-            <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-full z-10 flex justify-center px-4">
+            <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-full z-10 flex justify-center px-4">
                 <div className="bg-black px-6 py-2 rounded-md">
                     <h1 className="text-3xl md:text-5xl font-black text-white text-center">
                         Create links that do more than redirect!
