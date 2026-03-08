@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import {
@@ -21,6 +21,7 @@ import {
     Download,
     Pencil,
     Check,
+    X,
 } from "lucide-react";
 import { useGetAnalyticsQuery } from "../store/analyticsSlice";
 
@@ -161,7 +162,7 @@ export default function Analytics() {
     const { data, isLoading, isError } = useGetAnalyticsQuery(id);
 
     const [copied, setCopied] = useState(false);
-    const qrRef = useRef(null);
+    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
     const url = data?.data?.url;
     const stats = data?.data?.stats;
@@ -253,11 +254,11 @@ export default function Analytics() {
         setTimeout(() => setCopied(false), 2000);
     }, [shortUrl]);
 
-    const handleDownloadQr = useCallback(() => {
-        const canvas = qrRef.current?.querySelector("canvas");
+    const downloadQRCode = useCallback(() => {
+        const canvas = document.getElementById("qr-canvas");
         if (!canvas) return;
         const link = document.createElement("a");
-        link.download = `nanoalias-qr-${url?.customAlias || url?.shortCode}.png`;
+        link.download = `nanoalias-${url?.customAlias || url?.shortCode}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
     }, [url]);
@@ -323,7 +324,7 @@ export default function Analytics() {
                             onClick={handleCopy}
                             accent={copied ? "#34d399" : "#9aa7b8"}
                         />
-                        <ActionBtn icon={Download} label="Download QR" onClick={handleDownloadQr} />
+                        <ActionBtn icon={Download} label="Download QR" onClick={() => setIsQrModalOpen(true)} />
                         <ActionBtn
                             icon={Pencil}
                             label="Edit"
@@ -332,10 +333,59 @@ export default function Analytics() {
                     </div>
                 </div>
 
-                {/* Hidden QR for download */}
-                <div ref={qrRef} className="absolute -left-[9999px]" aria-hidden="true">
-                    <QRCodeCanvas value={shortUrl} size={400} bgColor="#ffffff" fgColor="#0f172a" level="H" includeMargin />
-                </div>
+                {/* QR Modal */}
+                {isQrModalOpen && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+                        onClick={() => setIsQrModalOpen(false)}
+                    >
+                        <div
+                            className="relative rounded-2xl p-6 shadow-2xl w-full max-w-sm"
+                            style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setIsQrModalOpen(false)}
+                                className="absolute top-4 right-4 p-1.5 rounded-lg transition hover:bg-white/10 text-slate-400 hover:text-white"
+                                aria-label="Close modal"
+                            >
+                                <X size={18} />
+                            </button>
+
+                            {/* Title */}
+                            <h3 className="text-lg font-semibold text-white mb-1">QR Code</h3>
+                            <p className="text-sm text-slate-400 mb-6 font-mono">
+                                /{url?.customAlias || url?.shortCode}
+                            </p>
+
+                            {/* QR Code */}
+                            <div className="flex justify-center mb-6">
+                                <div className="bg-white rounded-xl p-4">
+                                    <QRCodeCanvas
+                                        id="qr-canvas"
+                                        value={shortUrl}
+                                        size={200}
+                                        bgColor="#ffffff"
+                                        fgColor="#0f172a"
+                                        level="H"
+                                        includeMargin={false}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Download Button */}
+                            <button
+                                onClick={downloadQRCode}
+                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
+                                style={{ background: 'linear-gradient(90deg, #7dd3fc, #9b7bff)', color: '#000' }}
+                            >
+                                <Download size={16} />
+                                Download Image
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
