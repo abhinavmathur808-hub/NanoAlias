@@ -204,10 +204,10 @@ export default function Landing() {
 
             {/* ── Tagline ── */}
             <p
-                className="relative z-10 text-xl md:text-3xl font-semibold text-gray-200 text-center mb-8"
+                className="absolute top-24 left-1/2 transform -translate-x-1/2 w-full text-center z-10 text-3xl md:text-5xl font-extrabold text-gray-200"
                 style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.5)" }}
             >
-                Create links that do more than redirect
+                Create links that do more than redirect!
             </p>
 
             {/* ── Central Ruby Shape ── */}
