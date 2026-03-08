@@ -81,18 +81,18 @@ const ACCENT = {
 /* ─── Sub-components ─── */
 function SummaryCard({ icon: Icon, label, value, accent }) {
     return (
-        <div className="border rounded-xl p-6 flex items-center gap-4 backdrop-blur-sm" style={{ background: '#0b0b0b', borderColor: 'rgba(26,26,26,0.6)' }}>
+        <div className="rounded-xl border border-white/5 p-5 flex items-center gap-4" style={{ background: '#0b0b0b' }}>
             <div
-                className="h-12 w-12 rounded-lg flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${accent}18` }}
+                className="h-11 w-11 rounded-lg flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${accent}15` }}
             >
-                <Icon size={22} style={{ color: accent }} />
+                <Icon size={20} style={{ color: accent }} />
             </div>
             <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">
+                <p className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
                     {label}
                 </p>
-                <p className="text-2xl font-bold mt-0.5" style={{ color: '#e6eef8' }}>{value}</p>
+                <p className="text-xl font-bold mt-0.5" style={{ color: '#e6eef8' }}>{value}</p>
             </div>
         </div>
     );
@@ -108,12 +108,12 @@ function CustomTooltip({ active, payload, label }) {
     );
 }
 
-function ProgressList({ title, items, accent, maxValue }) {
+function ProgressList({ title, items, accent, maxValue, emptyText = "No data yet." }) {
     return (
-        <div className="rounded-2xl p-5 shadow-xl" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
-            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">{title}</h3>
+        <div className="rounded-xl border border-white/5 p-5" style={{ background: '#0b0b0b' }}>
+            <h3 className="text-xs font-semibold text-slate-400 mb-4 uppercase tracking-wider">{title}</h3>
             {items.length === 0 ? (
-                <p className="text-slate-500 text-sm py-6 text-center">No data yet.</p>
+                <p className="text-slate-600 text-xs py-6 text-center leading-relaxed">{emptyText}</p>
             ) : (
                 <div className="space-y-3">
                     {items.map((item, i) => {
@@ -124,10 +124,10 @@ function ProgressList({ title, items, accent, maxValue }) {
                                     <span className="text-sm text-slate-300 truncate max-w-[70%]">{item.label}</span>
                                     <span className="text-xs font-semibold tabular-nums" style={{ color: accent }}>{item.value.toLocaleString()}</span>
                                 </div>
-                                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
                                     <div
                                         className="h-full rounded-full transition-all duration-700 ease-out"
-                                        style={{ width: `${Math.max(pct, 2)}%`, background: accent, opacity: 0.85 }}
+                                        style={{ width: `${Math.max(pct, 2)}%`, background: accent, opacity: 0.8 }}
                                     />
                                 </div>
                             </div>
@@ -139,16 +139,17 @@ function ProgressList({ title, items, accent, maxValue }) {
     );
 }
 
-/* ─── Quick Action Button ─── */
+/* ─── Quick Action Button (icon-only with tooltip) ─── */
 function ActionBtn({ icon: Icon, label, onClick, accent = "#9aa7b8" }) {
     return (
         <button
             onClick={onClick}
             title={label}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:bg-white/10"
-            style={{ color: accent, border: '1px solid rgba(26,26,26,0.6)' }}
+            aria-label={label}
+            className="p-2 rounded-lg transition-all hover:bg-white/10 border border-white/5"
+            style={{ color: accent }}
         >
-            <Icon size={14} />{label}
+            <Icon size={15} />
         </button>
     );
 }
@@ -388,7 +389,7 @@ export default function Analytics() {
                 )}
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                     <SummaryCard
                         icon={MousePointerClick}
                         label="Total Clicks"
@@ -410,16 +411,16 @@ export default function Analytics() {
                 </div>
 
                 {/* Clicks Over Time — Area Chart */}
-                <div className="rounded-2xl p-6 shadow-xl backdrop-blur-sm mb-8" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
-                    <h2 className="text-lg font-semibold text-white mb-4">
+                <div className="rounded-xl border border-white/5 p-5 mb-6" style={{ background: '#0b0b0b' }}>
+                    <h2 className="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">
                         Clicks Over Time
                     </h2>
                     {chartData.length === 0 ? (
-                        <p className="text-center text-slate-500 py-16 text-sm">
+                        <p className="text-center text-slate-600 py-10 text-xs">
                             No click data yet.
                         </p>
                     ) : (
-                        <ResponsiveContainer width="100%" height={320}>
+                        <ResponsiveContainer width="100%" height={260}>
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
@@ -456,7 +457,7 @@ export default function Analytics() {
                 </div>
 
                 {/* Progress Bar Sections */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <ProgressList
                         title="Top Locations"
                         items={locationItems}
@@ -464,7 +465,7 @@ export default function Analytics() {
                         maxValue={maxLoc}
                     />
                     <ProgressList
-                        title="Device & OS Breakdown"
+                        title="Device & OS"
                         items={deviceOsItems}
                         accent={ACCENT.device}
                         maxValue={maxDev}
@@ -474,6 +475,7 @@ export default function Analytics() {
                         items={referrerItems}
                         accent={ACCENT.referrer}
                         maxValue={maxRef}
+                        emptyText="Data collection started after schema update. New clicks will appear here."
                     />
                 </div>
             </div>
