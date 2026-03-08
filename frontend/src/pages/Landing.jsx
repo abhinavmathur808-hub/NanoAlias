@@ -219,7 +219,15 @@ export default function Landing() {
                         NanoAlias
                     </h1>
                     <p className="text-white text-lg sm:text-xl font-medium mt-1 sm:mt-2 mb-4 sm:mb-6 opacity-90">
-                        ~by Abhinav Mathur
+                        ~by{" "}
+                        <a
+                            href="https://www.linkedin.com/in/abhinav-mathur-669414356"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="creator-link"
+                        >
+                            Abhinav Mathur
+                        </a>
                     </p>
                     <button
                         onClick={handleShortenClick}
@@ -244,6 +252,15 @@ export default function Landing() {
                     0%   { opacity: 1; }
                     50%  { opacity: 0.3; }
                     100% { opacity: 1; }
+                }
+                .creator-link {
+                    color: inherit;
+                    text-decoration: none;
+                    transition: color 0.3s ease, text-shadow 0.3s ease;
+                }
+                .creator-link:hover {
+                    color: #CEB372;
+                    text-shadow: 0 0 8px rgba(206, 179, 114, 0.6);
                 }
             `}</style>
         </div>
