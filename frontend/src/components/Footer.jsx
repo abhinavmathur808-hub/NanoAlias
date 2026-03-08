@@ -44,8 +44,13 @@ export default function Footer() {
 
             <style>{`
                 .footer-icon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     color: rgba(255, 255, 255, 0.45);
                     text-decoration: none;
+                    cursor: pointer;
+                    line-height: 1;
                     transition: color 0.3s ease, filter 0.3s ease;
                 }
                 .footer-icon:hover {
