@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Footer from "../components/Footer";
 import {
     Link as LinkIcon,
     Globe,
@@ -253,8 +252,6 @@ export default function Landing() {
 
 
             {/* ── Keyframe Animation ── */}
-            <Footer />
-
             <style>{`
                 @keyframes floatIcon {
                     0%   { transform: translateY(0px); }
