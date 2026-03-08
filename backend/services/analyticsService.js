@@ -35,7 +35,19 @@ exports.logClick = async (req, urlData) => {
             referrer,
         });
 
-        Url.findByIdAndUpdate(urlData._id, { $inc: { clicks: 1 } }).exec();
+        await Url.findByIdAndUpdate(urlData._id, {
+            $inc: { "analytics.totalClicks": 1 },
+            $push: {
+                "analytics.clicks": {
+                    timestamp: new Date(),
+                    location: `${city}, ${country}`,
+                    device: deviceType,
+                    os,
+                    browser,
+                    referrer,
+                },
+            },
+        });
     } catch (err) {
         console.error("Analytics logClick error:", err.message);
     }

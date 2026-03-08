@@ -38,9 +38,18 @@ const urlSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        clicks: {
-            type: Number,
-            default: 0,
+        analytics: {
+            totalClicks: { type: Number, default: 0 },
+            clicks: [
+                {
+                    timestamp: { type: Date, default: Date.now },
+                    location: { type: String, default: "unknown" },
+                    device: { type: String, default: "Desktop" },
+                    os: { type: String, default: "unknown" },
+                    browser: { type: String, default: "unknown" },
+                    referrer: { type: String, default: "direct" },
+                },
+            ],
         },
         status: {
             type: String,

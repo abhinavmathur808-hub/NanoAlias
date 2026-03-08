@@ -201,7 +201,7 @@ function LinksTable({ urls, searchQuery, onToggle, togglingId }) {
                                 {url.user?.email || "—"}
                             </td>
                             <td className="px-6 py-4 text-center text-sm text-white font-semibold">
-                                {(url.clicks || 0).toLocaleString()}
+                                {(url.analytics?.totalClicks || 0).toLocaleString()}
                             </td>
                             <td className="px-6 py-4 text-center">
                                 <span

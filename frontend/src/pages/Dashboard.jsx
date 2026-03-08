@@ -339,7 +339,7 @@ export default function Dashboard() {
     }, [urls, searchQuery]);
 
     const stats = useMemo(() => {
-        const totalClicks = urls.reduce((sum, u) => sum + (u.clicks || 0), 0);
+        const totalClicks = urls.reduce((sum, u) => sum + (u.analytics?.totalClicks || 0), 0);
         const activeLinks = urls.filter((u) => u.status === "active" && (!u.expiresAt || new Date(u.expiresAt) >= new Date())).length;
         return { totalClicks, activeLinks, totalLinks: urls.length };
     }, [urls]);
@@ -930,7 +930,7 @@ export default function Dashboard() {
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
                                                     <span className="text-sm font-semibold px-2.5 py-0.5 rounded-full" style={{ color: C.text, background: `${C.primary}10`, ...mono }}>
-                                                        {(url.clicks || 0).toLocaleString()}
+                                                        {(url.analytics?.totalClicks || 0).toLocaleString()}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
@@ -977,7 +977,7 @@ export default function Dashboard() {
                                         </p>
                                         <div className="flex items-center justify-between">
                                             <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: `${C.primary}10`, color: C.primary, ...mono }}>
-                                                {(url.clicks || 0).toLocaleString()} clicks
+                                                {(url.analytics?.totalClicks || 0).toLocaleString()} clicks
                                             </span>
                                             <div className="flex items-center gap-1">
                                                 <CopyBtn text={shortUrl} onToast={showToast} />
