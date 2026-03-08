@@ -203,12 +203,16 @@ export default function Landing() {
             <DiamondHalo />
 
             {/* ── Tagline ── */}
-            <p
-                className="absolute top-24 left-1/2 transform -translate-x-1/2 w-full text-center z-10 text-3xl md:text-5xl font-extrabold text-gray-200"
-                style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.5)" }}
-            >
-                Create links that do more than redirect!
-            </p>
+            <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-full z-10 flex justify-center px-4">
+                <div className="bg-black/95 px-10 py-4 rounded-lg">
+                    <h1
+                        className="text-3xl md:text-5xl font-extrabold text-white text-center tracking-tight"
+                        style={{ fontFamily: "'Syne', sans-serif" }}
+                    >
+                        Create links that do more than redirect!
+                    </h1>
+                </div>
+            </div>
 
             {/* ── Central Ruby Shape ── */}
             <div
