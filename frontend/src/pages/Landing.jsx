@@ -113,7 +113,7 @@ export default function Landing() {
     });
 
     return (
-        <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <div className="min-h-screen bg-black relative overflow-hidden flex flex-col items-center justify-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {/* ── Rich SVG Sunburst + Stippled Halo ── */}
             <svg
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] md:w-[1200px] md:h-[1200px] pointer-events-none"
@@ -201,6 +201,14 @@ export default function Landing() {
 
             {/* ── Diamond Dot Halo ── */}
             <DiamondHalo />
+
+            {/* ── Tagline ── */}
+            <p
+                className="relative z-10 text-xl md:text-3xl font-semibold text-gray-200 text-center mb-8"
+                style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.5)" }}
+            >
+                Create links that do more than redirect
+            </p>
 
             {/* ── Central Ruby Shape ── */}
             <div
