@@ -204,10 +204,10 @@ export default function Landing() {
 
             {/* ── Tagline ── */}
             <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-full z-10 flex justify-center px-4">
-                <div className="bg-black/95 px-10 py-4 rounded-lg">
+                <div className="bg-black px-6 py-2">
                     <h1
-                        className="text-3xl md:text-5xl font-extrabold text-white text-center tracking-tight"
-                        style={{ fontFamily: "'Syne', sans-serif" }}
+                        className="text-3xl md:text-5xl font-bold text-white text-center"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                         Create links that do more than redirect!
                     </h1>
