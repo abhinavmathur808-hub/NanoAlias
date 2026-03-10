@@ -78,6 +78,11 @@ app.use("/api/urls", strictLimiter);
 // Apply global limiter to all API routes
 app.use("/api", globalLimiter);
 
+// ── Health Check (UptimeRobot) ─────────────────────
+app.get("/", (req, res) => {
+    res.status(200).send("Server is awake");
+});
+
 // ── Routes ─────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/urls", urlRoutes);
