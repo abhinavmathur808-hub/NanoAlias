@@ -6,8 +6,6 @@ import { useLoginMutation, useGoogleLoginMutation } from "../store/usersApiSlice
 import { setCredentials } from "../store/authSlice";
 import nanoaliasLogo from "../assets/nanoalias_logo.png";
 
-
-
 export default function Login() {
     const { token } = useSelector((state) => state.auth);
     const [email, setEmail] = useState("");

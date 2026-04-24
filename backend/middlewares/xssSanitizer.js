@@ -1,9 +1,6 @@
 const { filterXSS } = require("xss");
 
-/**
- * Recursively sanitize all string values in an object to strip
- * malicious HTML / <script> tags from user input.
- */
+
 function sanitize(value) {
     if (typeof value === "string") {
         return filterXSS(value);
@@ -21,10 +18,7 @@ function sanitize(value) {
     return value;
 }
 
-/**
- * Express middleware – sanitizes req.body, req.query, and req.params
- * against XSS payloads using the battle-tested `xss` library.
- */
+
 exports.xssSanitizer = (req, _res, next) => {
     if (req.body) req.body = sanitize(req.body);
     if (req.query) req.query = sanitize(req.query);

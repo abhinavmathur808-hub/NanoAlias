@@ -17,7 +17,7 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
-app.set("trust proxy", 1); // Trust Render's reverse proxy for accurate IP resolution
+app.set("trust proxy", 1);
 
 connectDB();
 connectRedis();
@@ -45,12 +45,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ── Data Sanitization ──────────────────────────────
-app.use(mongoSanitize()); // Prevent NoSQL injection ($gt, $eq, etc.)
-app.use(xssSanitizer);    // Strip malicious HTML / <script> tags
+app.use(mongoSanitize());
+app.use(xssSanitizer);
 
 // ── Rate Limiters ──────────────────────────────────
 const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 15 * 60 * 1000,
     max: 100,
     standardHeaders: true,
     legacyHeaders: false,
@@ -61,7 +61,7 @@ const globalLimiter = rateLimit({
 });
 
 const strictLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 15 * 60 * 1000,
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
@@ -71,11 +71,11 @@ const strictLimiter = rateLimit({
     },
 });
 
-// Apply strict limiter to sensitive routes (auth & URL shortening)
+
 app.use("/api/auth", strictLimiter);
 app.use("/api/urls", strictLimiter);
 
-// Apply global limiter to all API routes
+
 app.use("/api", globalLimiter);
 
 // ── Health Check (UptimeRobot) ─────────────────────

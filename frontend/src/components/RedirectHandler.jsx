@@ -10,13 +10,9 @@ export default function RedirectHandler() {
     useEffect(() => {
         if (!alias) return;
 
-        // The backend /:alias route handles the actual 302 redirect,
-        // password gates, expiry checks, and analytics tracking.
-        // We simply point the browser at it.
         const backendRedirectUrl = `${API_URL.replace("/api", "")}/${alias}`;
         window.location.replace(backendRedirectUrl);
 
-        // Fallback: if we're still here after 8 seconds, show an error
         const timeout = setTimeout(() => setError(true), 8000);
         return () => clearTimeout(timeout);
     }, [alias]);
