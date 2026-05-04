@@ -341,7 +341,8 @@ export default function Dashboard() {
     const stats = useMemo(() => {
         const totalClicks = urls.reduce((sum, u) => sum + (u.analytics?.totalClicks || 0), 0);
         const activeLinks = urls.filter((u) => u.status === "active" && (!u.expiresAt || new Date(u.expiresAt) >= new Date())).length;
-        return { totalClicks, activeLinks, totalLinks: urls.length };
+        const burnLinks = urls.filter((u) => u.oneTimeUse).length;
+        return { totalClicks, activeLinks, totalLinks: urls.length, burnLinks };
     }, [urls]);
 
     const applyExpiryPreset = (preset) => {
@@ -809,7 +810,7 @@ export default function Dashboard() {
                                 <StatTile icon={MousePointerClick} label="Total Clicks" value={stats.totalClicks} color={C.accent1} />
                                 <StatTile icon={Zap} label="Active Links" value={stats.activeLinks} color={C.accent3} />
                                 <StatTile icon={Globe} label="Total Links" value={stats.totalLinks} color={C.accent4} />
-                                <StatTile icon={QrCode} label="QR Codes" value={stats.totalLinks} color={C.accent5} />
+                                <StatTile icon={Flame} label="Burn Links" value={stats.burnLinks} color={C.warn} />
                             </div>
                         </div>
                     </div>

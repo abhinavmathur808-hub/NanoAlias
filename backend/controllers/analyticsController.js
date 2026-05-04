@@ -20,8 +20,13 @@ exports.getDashboardStats = async (req, res, next) => {
         const urls = await Url.find({ user: req.user.id });
         const urlIds = urls.map((u) => u._id);
         const totalClicks = await Analytics.countDocuments({ urlId: { $in: urlIds } });
+        const activeLinks = urls.filter((u) => u.status === "active" && (!u.expiresAt || new Date(u.expiresAt) >= new Date())).length;
+        const burnLinks = urls.filter((u) => u.oneTimeUse).length;
 
-        res.json({ success: true, data: { totalUrls: urls.length, totalClicks } });
+        res.json({
+            success: true,
+            data: { totalLinks: urls.length, totalClicks, activeLinks, burnLinks },
+        });
     } catch (err) {
         next(err);
     }

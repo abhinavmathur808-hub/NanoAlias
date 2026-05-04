@@ -1,13 +1,19 @@
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+function getResendClient() {
+    if (!resend) {
+        resend = new Resend(process.env.RESEND_API_KEY);
+    }
+    return resend;
+}
 
 const senderEmail = "NanoAlias <noreply@nanoalias.com>";
 
 exports.sendVerificationEmail = async (to, token) => {
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${token}`;
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
         from: senderEmail,
         to,
         subject: "Verify Your Email — NanoAlias",
@@ -48,7 +54,7 @@ exports.sendVerificationEmail = async (to, token) => {
 exports.sendPasswordResetEmail = async (to, token) => {
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
         from: senderEmail,
         to,
         subject: "Reset Your Password — NanoAlias",
@@ -96,7 +102,7 @@ exports.sendOTPVerificationEmail = async (to, otp) => {
         )
         .join('<td style="width:8px"></td>');
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
         from: senderEmail,
         to,
         subject: `${otp} is your NanoAlias verification code`,
