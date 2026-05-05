@@ -214,7 +214,7 @@ function StatusBadge({ status, expiresAt, oneTimeUse }) {
 export default function Dashboard() {
     const navigate = useNavigate();
     const { userInfo } = useSelector((state) => state.auth);
-    const { data, isLoading, isError } = useGetMyUrlsQuery();
+    const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 10_000 });
     const [createUrl, { isLoading: isCreating }] = useCreateUrlMutation();
     const [deleteUrl] = useDeleteUrlMutation();
 
