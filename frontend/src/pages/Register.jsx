@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleLogin } from "@react-oauth/google";
 import { useRegisterMutation, useVerifyOtpMutation, useGoogleLoginMutation } from "../store/usersApiSlice";
@@ -82,13 +82,23 @@ export default function Register() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const [register, { isLoading }] = useRegisterMutation();
     const [verifyOtpMutation, { isLoading: isVerifying }] = useVerifyOtpMutation();
     const [googleLoginMutation] = useGoogleLoginMutation();
 
+    const [routeAlert, setRouteAlert] = useState("");
+
     useEffect(() => {
         if (token) navigate("/", { replace: true });
     }, [token, navigate]);
+
+    useEffect(() => {
+        if (location.state?.alert) {
+            setRouteAlert(location.state.alert);
+            window.history.replaceState({}, "");
+        }
+    }, [location.state]);
 
     const emailValid = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), [email]);
     const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
@@ -168,6 +178,18 @@ export default function Register() {
                             <p className="text-sm text-gray-400 mb-6">
                                 Start shortening links in seconds — free forever.
                             </p>
+
+                            {routeAlert && (
+                                <div
+                                    className="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm flex items-center gap-2"
+                                    role="status"
+                                >
+                                    <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                    </svg>
+                                    {routeAlert}
+                                </div>
+                            )}
 
                             {error && (
                                 <div

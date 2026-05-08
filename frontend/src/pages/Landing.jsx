@@ -85,7 +85,7 @@ export default function Landing() {
     const { token } = useSelector((state) => state.auth);
 
     const handleShortenClick = () => {
-        navigate(token ? "/dashboard" : "/register");
+        navigate("/dashboard");
     };
 
     const richColors = ["#E2242A", "#CEB372", "#50C878", "#4A90D9", "#9B59B6", "#E67E22"];

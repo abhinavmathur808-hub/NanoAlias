@@ -213,8 +213,9 @@ function StatusBadge({ status, expiresAt, oneTimeUse }) {
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const { userInfo } = useSelector((state) => state.auth);
-    const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 10_000 });
+    const { userInfo, token } = useSelector((state) => state.auth);
+    const isGuest = !token;
+    const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 10_000, skip: isGuest });
     const [createUrl, { isLoading: isCreating }] = useCreateUrlMutation();
     const [deleteUrl] = useDeleteUrlMutation();
 
@@ -358,6 +359,7 @@ export default function Dashboard() {
 
     const handleCreate = async (e) => {
         e.preventDefault();
+        if (isGuest) { navigate("/register", { state: { alert: "Please log in or sign up to shorten links!" } }); return; }
         setCreateError("");
         setCreateSuccess("");
         const body = { originalUrl: longUrl };
@@ -861,11 +863,11 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {isLoading ? (
+                    {!isGuest && isLoading ? (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 size={28} className="animate-spin" style={{ color: C.primary }} />
                         </div>
-                    ) : isError ? (
+                    ) : !isGuest && isError ? (
                         <div className="text-center py-20 text-sm" style={{ color: "#f87171" }}>
                             Failed to load your links. Please try again.
                         </div>
