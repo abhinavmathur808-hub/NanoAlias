@@ -215,7 +215,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { userInfo, token } = useSelector((state) => state.auth);
     const isGuest = !token;
-    const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 10_000, skip: isGuest });
+    const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 30_000, skip: isGuest });
     const [createUrl, { isLoading: isCreating }] = useCreateUrlMutation();
     const [deleteUrl] = useDeleteUrlMutation();
 

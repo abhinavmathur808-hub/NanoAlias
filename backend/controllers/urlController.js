@@ -196,6 +196,17 @@ exports.unlockUrl = async (req, res, next) => {
             return next(new AppError("Short URL not found", 404));
         }
 
+        if (urlDoc.status === "disabled" || urlDoc.status === "archived") {
+            return next(new AppError("This link is no longer available", 410));
+        }
+
+        if (urlDoc.expiresAt && new Date(urlDoc.expiresAt) < new Date()) {
+            await Url.findByIdAndUpdate(urlDoc._id, { status: "disabled" });
+            await invalidateCache(shortCode);
+            if (urlDoc.customAlias) await invalidateCache(urlDoc.customAlias);
+            return next(new AppError("This link has expired", 410));
+        }
+
         if (!urlDoc.password) {
             return res.json({ success: true, originalUrl: urlDoc.originalUrl });
         }

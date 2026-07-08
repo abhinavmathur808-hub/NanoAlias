@@ -72,8 +72,11 @@ const strictLimiter = rateLimit({
 });
 
 
+// strictLimiter guards auth only. URL creation has its own dedicated
+// Redis-backed limiter (middlewares/rateLimiter.js); applying strictLimiter
+// to the whole /api/urls namespace also throttled reads (GET /api/urls/my),
+// which locked out the dashboard.
 app.use("/api/auth", strictLimiter);
-app.use("/api/urls", strictLimiter);
 
 
 app.use("/api", globalLimiter);

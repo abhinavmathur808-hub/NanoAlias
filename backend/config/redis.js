@@ -5,9 +5,7 @@ let redisClient;
 const connectRedis = () => {
     redisClient = new Redis(process.env.REDIS_URL);
 
-    redisClient.on("connect", async () => {
-        await redisClient.flushall();
-    });
+    redisClient.on("connect", () => console.log("Redis connected"));
     redisClient.on("error", (err) => console.error("Redis error:", err));
 };
 

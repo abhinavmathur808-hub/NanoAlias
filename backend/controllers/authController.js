@@ -162,9 +162,15 @@ exports.forgotPassword = async (req, res, next) => {
             return next(new AppError("Email is required", 400));
         }
 
+        const genericMessage =
+            "If an account exists for that email, a password reset code has been sent.";
+
         const user = await User.findOne({ email });
+
+        // Respond identically whether or not the account exists, to avoid
+        // leaking which emails are registered (account enumeration).
         if (!user) {
-            return next(new AppError("No account found with that email address", 404));
+            return res.json({ success: true, message: genericMessage });
         }
 
         const otp = String(Math.floor(100000 + Math.random() * 900000));
@@ -174,10 +180,7 @@ exports.forgotPassword = async (req, res, next) => {
 
         await sendOTPVerificationEmail(email, otp);
 
-        res.json({
-            success: true,
-            message: "Password reset code sent to your email.",
-        });
+        res.json({ success: true, message: genericMessage });
     } catch (err) {
         next(err);
     }
@@ -220,6 +223,14 @@ exports.resetPassword = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
+
+exports.logoutUser = async (req, res) => {
+    // Auth is stateless (JWT held client-side); the client clears its own token.
+    // This endpoint exists so the frontend logout call resolves cleanly and can
+    // be extended later (e.g. cookie clearing or token blacklisting).
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out successfully" });
 };
 
 exports.googleLogin = async (req, res, next) => {
