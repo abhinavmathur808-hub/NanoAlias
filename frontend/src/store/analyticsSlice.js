@@ -14,7 +14,19 @@ export const analyticsApi = apiSlice.injectEndpoints({
             query: (urlId) => `/analytics/${urlId}`,
             providesTags: ["Analytics"],
         }),
+        askAnalytics: builder.mutation({
+            query: ({ id, question }) => ({
+                url: `/analytics/${id}/ask`,
+                method: "POST",
+                body: { question },
+            }),
+        }),
     }),
 });
 
-export const { useGetDashboardStatsQuery, useGetUrlAnalyticsQuery, useGetAnalyticsQuery } = analyticsApi;
+export const {
+    useGetDashboardStatsQuery,
+    useGetUrlAnalyticsQuery,
+    useGetAnalyticsQuery,
+    useAskAnalyticsMutation,
+} = analyticsApi;

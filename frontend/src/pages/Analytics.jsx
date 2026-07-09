@@ -22,8 +22,10 @@ import {
     Pencil,
     Check,
     X,
+    Sparkles,
+    Send,
 } from "lucide-react";
-import { useGetAnalyticsQuery } from "../store/analyticsSlice";
+import { useGetAnalyticsQuery, useAskAnalyticsMutation } from "../store/analyticsSlice";
 
 const BASE_URL = "https://nanoalias.com";
 
@@ -151,6 +153,132 @@ function ActionBtn({ icon: Icon, label, onClick, accent = "#9aa7b8" }) {
         >
             <Icon size={15} />
         </button>
+    );
+}
+
+/* ─── AI "Ask your data" panel ─── */
+const SUGGESTIONS = [
+    "What was my busiest day?",
+    "Which country drives the most clicks?",
+    "Mobile vs desktop breakdown?",
+    "Where does my traffic come from?",
+];
+
+function AskPanel({ urlId }) {
+    const [question, setQuestion] = useState("");
+    const [answer, setAnswer] = useState("");
+    const [errMsg, setErrMsg] = useState("");
+    const [ask, { isLoading }] = useAskAnalyticsMutation();
+
+    const submit = async (preset) => {
+        const query = (preset ?? question).trim();
+        if (!query || isLoading) return;
+        if (preset) setQuestion(preset);
+        setErrMsg("");
+        setAnswer("");
+        try {
+            const res = await ask({ id: urlId, question: query }).unwrap();
+            setAnswer(res.answer);
+        } catch (e) {
+            setErrMsg(e?.data?.message || "Something went wrong. Please try again.");
+        }
+    };
+
+    return (
+        <div
+            className="rounded-xl p-5 mb-6"
+            style={{
+                background: "#0b0b0b",
+                border: "1px solid rgba(155,123,255,0.25)",
+                boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.03)",
+            }}
+        >
+            <div className="flex items-center gap-2 mb-4">
+                <div
+                    className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: "rgba(155,123,255,0.12)" }}
+                >
+                    <Sparkles size={16} style={{ color: "#9b7bff" }} />
+                </div>
+                <div>
+                    <h2 className="text-sm font-semibold text-white leading-tight">Ask your data</h2>
+                    <p className="text-[11px] text-slate-500">Natural-language questions about this link's clicks</p>
+                </div>
+            </div>
+
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    submit();
+                }}
+                className="flex items-center gap-2"
+            >
+                <input
+                    type="text"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    placeholder="e.g. Which country clicks most?"
+                    aria-label="Ask a question about your analytics"
+                    maxLength={500}
+                    className="flex-1 px-4 py-2.5 rounded-lg text-sm outline-none transition-all focus:ring-2"
+                    style={{ background: "#000", color: "#e6eef8", border: "1px solid #1a1a1a" }}
+                    onFocus={(e) => (e.target.style.borderColor = "#9b7bff")}
+                    onBlur={(e) => (e.target.style.borderColor = "#1a1a1a")}
+                />
+                <button
+                    type="submit"
+                    disabled={isLoading || !question.trim()}
+                    aria-label="Send question"
+                    className="h-[42px] w-[42px] shrink-0 rounded-lg flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
+                    style={{ background: "linear-gradient(90deg, #7dd3fc, #9b7bff)", color: "#000" }}
+                >
+                    {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                </button>
+            </form>
+
+            {/* Suggestion chips (hidden once there's an answer) */}
+            {!answer && !errMsg && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                    {SUGGESTIONS.map((s) => (
+                        <button
+                            key={s}
+                            type="button"
+                            disabled={isLoading}
+                            onClick={() => submit(s)}
+                            className="px-3 py-1.5 rounded-full text-xs transition-all hover:bg-white/5 disabled:opacity-40"
+                            style={{ color: "#9aa7b8", border: "1px solid #1a1a1a" }}
+                        >
+                            {s}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Answer */}
+            {answer && (
+                <div
+                    className="mt-4 px-4 py-3 rounded-lg text-sm leading-relaxed"
+                    style={{
+                        background: "linear-gradient(90deg, rgba(125,211,252,0.06), rgba(155,123,255,0.06))",
+                        border: "1px solid rgba(155,123,255,0.2)",
+                        color: "#e6eef8",
+                    }}
+                >
+                    <div className="flex items-start gap-2">
+                        <Sparkles size={15} className="shrink-0 mt-0.5" style={{ color: "#9b7bff" }} />
+                        <p>{answer}</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Error */}
+            {errMsg && (
+                <div className="mt-4 px-4 py-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "#f8717115", border: "1px solid #f8717130", color: "#f87171" }}>
+                    <AlertCircle size={15} className="shrink-0" />
+                    {errMsg}
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -409,6 +537,9 @@ export default function Analytics() {
                         accent="#9b7bff"
                     />
                 </div>
+
+                {/* AI — Ask your data */}
+                <AskPanel urlId={id} />
 
                 {/* Clicks Over Time — Area Chart */}
                 <div className="rounded-xl border border-white/5 p-5 mb-6" style={{ background: '#0b0b0b' }}>

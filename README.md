@@ -21,6 +21,7 @@
 | **Malware & Phishing Protection** | Every destination is screened against Google Safe Browsing at creation — flagged URLs are refused |
 | **Password-Protected Links** | Secure any short URL behind a password — unlock page included |
 | **Analytics Dashboard** | Click tracking, geo-location (GeoIP), device/browser parsing (UA Parser), interactive Recharts graphs |
+| **AI Analytics ("Ask your data")** | Ask questions about a link's clicks in plain English — powered by Google Gemini over your own aggregated data |
 | **QR Code Generator** | Generate, customise, and download QR codes for any short link |
 | **Admin Panel** | Role-based access control — manage users, view all links, toggle URL status |
 | **Redis Caching** | High-performance redirect resolution with Redis-backed rate limiting |
@@ -99,6 +100,8 @@ Request
 | `CLIENT_URL` | Frontend URL (e.g. `https://your-app.vercel.app`) |
 | `GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID |
 | `GOOGLE_SAFE_BROWSING_API_KEY` | Google Safe Browsing API key for URL safety screening (optional — leave blank to disable). Free: create a project in [Google Cloud Console](https://console.cloud.google.com), enable the **Safe Browsing API**, and generate an API key. |
+| `GEMINI_API_KEY` | Google Gemini API key powering the "Ask your data" AI analytics (optional — leave blank to disable). Free key at [Google AI Studio](https://aistudio.google.com/apikey), no billing card required. |
+| `GEMINI_MODEL` | Optional Gemini model override (default: `gemini-2.0-flash`). |
 
 ### Frontend (`frontend/.env`)
 
