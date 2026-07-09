@@ -18,6 +18,7 @@
 | **Authentication** | Email/password with OTP verification, Google OAuth 2.0, forgot/reset password flow |
 | **URL Shortening** | Custom aliases, auto-generated short codes via nanoid |
 | **Burn After Reading** | One-time-use links that self-destruct after a single visit |
+| **Malware & Phishing Protection** | Every destination is screened against Google Safe Browsing at creation — flagged URLs are refused |
 | **Password-Protected Links** | Secure any short URL behind a password — unlock page included |
 | **Analytics Dashboard** | Click tracking, geo-location (GeoIP), device/browser parsing (UA Parser), interactive Recharts graphs |
 | **QR Code Generator** | Generate, customise, and download QR codes for any short link |
@@ -97,6 +98,7 @@ Request
 | `EMAIL_PASS` | Email account password |
 | `CLIENT_URL` | Frontend URL (e.g. `https://your-app.vercel.app`) |
 | `GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | Google Safe Browsing API key for URL safety screening (optional — leave blank to disable). Free: create a project in [Google Cloud Console](https://console.cloud.google.com), enable the **Safe Browsing API**, and generate an API key. |
 
 ### Frontend (`frontend/.env`)
 

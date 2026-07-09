@@ -4,6 +4,7 @@ const Analytics = require("../models/Analytics");
 const { generateShortCode } = require("../utils/generateNanoId");
 const { cacheUrlData, getCachedUrlData, invalidateCache } = require("../services/redisService");
 const { logClick } = require("../services/analyticsService");
+const { checkUrlSafety } = require("../services/safeBrowsingService");
 const AppError = require("../utils/AppError");
 
 const URL_REGEX = /^https?:\/\/.+/i;
@@ -34,6 +35,18 @@ exports.createShortUrl = async (req, res, next) => {
             shortCode = generateShortCode();
         }
 
+        // Screen the destination against Google Safe Browsing. Known
+        // malware/phishing URLs are refused to protect the short domain.
+        const safety = await checkUrlSafety(originalUrl);
+        if (!safety.safe) {
+            return next(
+                new AppError(
+                    `This URL was flagged as ${safety.threats.join(", ")} and cannot be shortened.`,
+                    400
+                )
+            );
+        }
+
         let hashedPassword = null;
         if (password) {
             hashedPassword = await bcrypt.hash(password, 12);
@@ -48,6 +61,11 @@ exports.createShortUrl = async (req, res, next) => {
             expiresAt: expiresAt || null,
             oneTimeUse: oneTimeUse || false,
             tags: tags || [],
+            safety: {
+                status: safety.checked ? "safe" : "unchecked",
+                threats: [],
+                checkedAt: safety.checked ? new Date() : null,
+            },
         });
 
         await cacheUrlData(shortCode, {

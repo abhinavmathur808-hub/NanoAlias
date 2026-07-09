@@ -56,6 +56,15 @@ const urlSchema = new mongoose.Schema(
             enum: ["active", "disabled", "archived"],
             default: "active",
         },
+        safety: {
+            status: {
+                type: String,
+                enum: ["safe", "flagged", "unchecked"],
+                default: "unchecked",
+            },
+            threats: { type: [String], default: [] },
+            checkedAt: { type: Date, default: null },
+        },
         tags: {
             type: [String],
             default: [],
