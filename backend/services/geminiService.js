@@ -60,6 +60,16 @@ exports.askAnalytics = async (question, context) => {
         if (!res.ok) {
             const body = await res.text().catch(() => "");
             console.error("Gemini API error:", res.status, body.slice(0, 300));
+
+            // 429 = free-tier quota/rate limit exceeded — surface it distinctly.
+            if (res.status === 429) {
+                return {
+                    ok: false,
+                    status: 429,
+                    message: "AI request limit reached for now. Please try again in a little while.",
+                };
+            }
+
             return {
                 ok: false,
                 status: 502,
