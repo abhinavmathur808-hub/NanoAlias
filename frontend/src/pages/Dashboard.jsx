@@ -35,8 +35,9 @@ import {
     Palette,
     Shield,
     Share2,
+    Sparkles,
 } from "lucide-react";
-import { useGetMyUrlsQuery, useCreateUrlMutation, useDeleteUrlMutation } from "../store/urlSlice";
+import { useGetMyUrlsQuery, useCreateUrlMutation, useDeleteUrlMutation, useSuggestAliasMutation } from "../store/urlSlice";
 import QrModal from "../components/QrModal";
 
 const BASE_URL = "https://nanoalias.com";
@@ -223,6 +224,8 @@ export default function Dashboard() {
     const { data, isLoading, isError } = useGetMyUrlsQuery(undefined, { pollingInterval: 30_000, skip: isGuest });
     const [createUrl, { isLoading: isCreating }] = useCreateUrlMutation();
     const [deleteUrl] = useDeleteUrlMutation();
+    const [suggestAlias, { isLoading: isSuggesting }] = useSuggestAliasMutation();
+    const [aliasSuggestions, setAliasSuggestions] = useState([]);
 
     const [longUrl, setLongUrl] = useState("");
     const [showAdvanced, setShowAdvanced] = useState(false);
@@ -389,6 +392,22 @@ export default function Dashboard() {
         }
     };
 
+    const handleSuggestAlias = async () => {
+        if (!longUrl.trim()) {
+            setCreateError("Enter a URL first to get AI alias suggestions.");
+            return;
+        }
+        setCreateError("");
+        setAliasSuggestions([]);
+        try {
+            const res = await suggestAlias(longUrl.trim()).unwrap();
+            setAliasSuggestions(res.suggestions || []);
+            if (!res.suggestions?.length) showToast("No available suggestions — try a custom alias.");
+        } catch (err) {
+            showToast(err?.data?.message || "Couldn't get suggestions right now.");
+        }
+    };
+
     const handleDelete = async () => {
         if (!deleteTarget) return;
         try {
@@ -544,9 +563,22 @@ export default function Dashboard() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                                         {/* Custom Alias */}
                                         <div>
-                                            <label className="flex items-center gap-1.5 text-xs font-medium mb-1.5" style={{ color: C.muted }}>
-                                                <Hash size={12} /> Custom Alias
-                                            </label>
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <label className="flex items-center gap-1.5 text-xs font-medium" style={{ color: C.muted }}>
+                                                    <Hash size={12} /> Custom Alias
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSuggestAlias}
+                                                    disabled={isSuggesting}
+                                                    aria-label="Suggest an alias with AI"
+                                                    className="btn-press flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    style={{ color: C.accent5, border: `1px solid ${tint(C.accent5, 35)}` }}
+                                                >
+                                                    {isSuggesting ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
+                                                    AI suggest
+                                                </button>
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={customAlias}
@@ -558,7 +590,23 @@ export default function Dashboard() {
                                                 onFocus={(e) => e.target.style.borderColor = C.primary}
                                                 onBlur={(e) => e.target.style.borderColor = C.border}
                                             />
-                                            <p className="text-[11px] mt-1" style={{ color: C.muted }}>Letters, numbers, and hyphens only.</p>
+                                            {aliasSuggestions.length > 0 ? (
+                                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                                    {aliasSuggestions.map((s) => (
+                                                        <button
+                                                            key={s}
+                                                            type="button"
+                                                            onClick={() => { setCustomAlias(s); setAliasSuggestions([]); }}
+                                                            className="btn-press px-2 py-1 rounded-md text-[11px] transition hover:opacity-80"
+                                                            style={{ background: tint(C.accent5, 12), color: C.accent5, border: `1px solid ${tint(C.accent5, 25)}`, ...mono }}
+                                                        >
+                                                            /{s}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="text-[11px] mt-1" style={{ color: C.muted }}>Letters, numbers, and hyphens only.</p>
+                                            )}
                                         </div>
 
                                         {/* Password */}

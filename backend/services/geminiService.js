@@ -109,3 +109,116 @@ exports.askAnalytics = async (question, context) => {
         clearTimeout(timeout);
     }
 };
+
+const ALIAS_SYSTEM = `You generate short, memorable URL slugs for a link shortener.
+Given a destination URL and (optionally) its page title/description, propose 3 candidate slugs.
+Rules for every slug:
+- 3 to 24 characters
+- lowercase letters, numbers and single hyphens only
+- no spaces, no leading/trailing hyphen, no consecutive hyphens
+- human-readable and clearly related to the destination
+- avoid generic filler words like "link", "url", "site", "page", "home"
+Return ONLY a JSON array of exactly 3 distinct strings.
+Example: ["stripe-charges","api-charges","stripe-api"]`;
+
+/**
+ * Suggest short, human-readable alias slugs for a destination URL.
+ *
+ * @param {{ url: string, title?: string, description?: string }} input
+ * @returns {Promise<{ ok: true, suggestions: string[] } | { ok: false, status: number, message: string }>}
+ */
+exports.suggestAliases = async ({ url, title, description }) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return {
+            ok: false,
+            status: 503,
+            message: "AI alias suggestions are not configured on the server.",
+        };
+    }
+
+    const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    const context = [
+        `URL: ${url}`,
+        title ? `Title: ${title}` : "",
+        description ? `Description: ${description}` : "",
+    ]
+        .filter(Boolean)
+        .join("\n");
+
+    try {
+        const res = await fetch(
+            `${GEMINI_ENDPOINT}/${model}:generateContent?key=${apiKey}`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                signal: controller.signal,
+                body: JSON.stringify({
+                    systemInstruction: { parts: [{ text: ALIAS_SYSTEM }] },
+                    contents: [{ role: "user", parts: [{ text: context }] }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 120,
+                        responseMimeType: "application/json",
+                    },
+                }),
+            }
+        );
+
+        if (!res.ok) {
+            const body = await res.text().catch(() => "");
+            console.error("Gemini alias error:", res.status, body.slice(0, 300));
+            if (res.status === 429) {
+                return {
+                    ok: false,
+                    status: 429,
+                    message: "AI request limit reached for now. Please try again shortly.",
+                };
+            }
+            return {
+                ok: false,
+                status: 502,
+                message: "The AI service is temporarily unavailable. Please try again.",
+            };
+        }
+
+        const data = await res.json();
+        if (data?.promptFeedback?.blockReason) {
+            return {
+                ok: false,
+                status: 400,
+                message: "Couldn't generate suggestions for this URL.",
+            };
+        }
+
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        let arr = [];
+        try {
+            arr = JSON.parse(text);
+        } catch {
+            const m = text.match(/\[[\s\S]*\]/);
+            if (m) {
+                try {
+                    arr = JSON.parse(m[0]);
+                } catch {
+                    /* leave arr empty */
+                }
+            }
+        }
+        if (!Array.isArray(arr)) arr = [];
+
+        return { ok: true, suggestions: arr.map(String) };
+    } catch (err) {
+        console.error("Gemini alias request failed:", err.message);
+        return {
+            ok: false,
+            status: 504,
+            message: "The AI request timed out. Please try again.",
+        };
+    } finally {
+        clearTimeout(timeout);
+    }
+};

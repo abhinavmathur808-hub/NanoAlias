@@ -22,6 +22,7 @@
 | **Password-Protected Links** | Secure any short URL behind a password — unlock page included |
 | **Analytics Dashboard** | Click tracking, geo-location (GeoIP), device/browser parsing (UA Parser), interactive Recharts graphs |
 | **AI Analytics ("Ask your data")** | Ask questions about a link's clicks in plain English — powered by Google Gemini over your own aggregated data |
+| **AI Smart Aliases** | Generate short, readable, brandable short-codes from a destination's page content — availability-checked before you pick |
 | **QR Code Generator** | Generate, customise, and download QR codes for any short link |
 | **Admin Panel** | Role-based access control — manage users, view all links, toggle URL status |
 | **Redis Caching** | High-performance redirect resolution with Redis-backed rate limiting |

@@ -20,6 +20,13 @@ export const urlApi = apiSlice.injectEndpoints({
             query: () => "/urls/my",
             providesTags: ["Url"],
         }),
+        suggestAlias: builder.mutation({
+            query: (originalUrl) => ({
+                url: "/urls/suggest-alias",
+                method: "POST",
+                body: { originalUrl },
+            }),
+        }),
         updateUrl: builder.mutation({
             query: ({ id, ...body }) => ({
                 url: `/urls/${id}`,
@@ -46,6 +53,7 @@ export const urlApi = apiSlice.injectEndpoints({
 export const {
     useCreateUrlMutation,
     useGetMyUrlsQuery,
+    useSuggestAliasMutation,
     useUpdateUrlMutation,
     useDeleteUrlMutation,
 } = urlApi;

@@ -2,9 +2,10 @@ const router = require("express").Router();
 const { protect } = require("../middlewares/authMiddleware");
 const { rateLimiter } = require("../middlewares/rateLimiter");
 const { geoIpTracker } = require("../middlewares/geoIpTracker");
-const { createShortUrl, redirectUrl, getUserUrls, deleteUrl, updateUrl, unlockUrl } = require("../controllers/urlController");
+const { createShortUrl, redirectUrl, getUserUrls, deleteUrl, updateUrl, unlockUrl, suggestAlias } = require("../controllers/urlController");
 
 router.post("/", protect, rateLimiter, createShortUrl);
+router.post("/suggest-alias", protect, rateLimiter, suggestAlias);
 router.get("/my", protect, getUserUrls);
 router.patch("/:id", protect, updateUrl);
 router.delete("/:id", protect, deleteUrl);

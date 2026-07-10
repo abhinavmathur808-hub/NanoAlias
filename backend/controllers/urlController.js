@@ -5,6 +5,8 @@ const { generateShortCode } = require("../utils/generateNanoId");
 const { cacheUrlData, getCachedUrlData, invalidateCache } = require("../services/redisService");
 const { logClick } = require("../services/analyticsService");
 const { checkUrlSafety } = require("../services/safeBrowsingService");
+const { fetchUrlMetadata } = require("../services/metadataService");
+const { suggestAliases } = require("../services/geminiService");
 const AppError = require("../utils/AppError");
 
 const URL_REGEX = /^https?:\/\/.+/i;
@@ -81,6 +83,58 @@ exports.createShortUrl = async (req, res, next) => {
         delete response.password;
 
         res.status(201).json({ success: true, data: response });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.suggestAlias = async (req, res, next) => {
+    try {
+        const { originalUrl } = req.body;
+
+        if (!originalUrl || !URL_REGEX.test(originalUrl)) {
+            return next(new AppError("A valid HTTP or HTTPS URL is required", 400));
+        }
+
+        const metadata = await fetchUrlMetadata(originalUrl);
+
+        const result = await suggestAliases({
+            url: originalUrl,
+            title: metadata.title,
+            description: metadata.description,
+        });
+        if (!result.ok) {
+            return next(new AppError(result.message, result.status));
+        }
+
+        // Normalise each candidate to a valid slug and drop malformed/dupes.
+        const cleaned = [];
+        for (const raw of result.suggestions) {
+            const slug = String(raw)
+                .toLowerCase()
+                .replace(/[^a-z0-9-]+/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "")
+                .slice(0, 24);
+            if (slug.length >= 3 && !cleaned.includes(slug)) cleaned.push(slug);
+        }
+
+        // Keep only slugs that aren't already taken.
+        let available = cleaned;
+        if (cleaned.length) {
+            const taken = await Url.find({
+                $or: [{ shortCode: { $in: cleaned } }, { customAlias: { $in: cleaned } }],
+            }).select("shortCode customAlias");
+
+            const takenSet = new Set();
+            taken.forEach((u) => {
+                takenSet.add(u.shortCode);
+                if (u.customAlias) takenSet.add(u.customAlias);
+            });
+            available = cleaned.filter((s) => !takenSet.has(s));
+        }
+
+        res.json({ success: true, suggestions: available, title: metadata.title || null });
     } catch (err) {
         next(err);
     }
