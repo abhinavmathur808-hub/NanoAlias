@@ -13,3 +13,5 @@ dist-ssr/
 
 # OS files
 .DS_Store
+
+# IDE and Local Environment Settings

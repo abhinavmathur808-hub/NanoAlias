@@ -43,26 +43,31 @@ const BASE_URL = "https://nanoalias.com";
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
+// Theme-reactive palette — all values resolve through the CSS variables
+// defined in index.css, so the whole page re-skins when data-theme flips.
 const C = {
-    bg: "#000000",
-    surface: "#0b0b0b",
-    card: "#0b0b0b",
-    text: "#e6eef8",
-    muted: "#9aa7b8",
-    primary: "#7dd3fc",
-    accent: "#ff6fb5",
-    accent1: "#7dd3fc",
-    accent2: "#ff6fb5",
-    accent3: "#7efc6a",
-    accent4: "#ffb86b",
-    accent5: "#9b7bff",
-    success: "#34d399",
-    warn: "#f59e0b",
-    border: "#1a1a1a",
-    glow: "rgba(125,211,252,0.06)",
-    glowSecondary: "rgba(255,111,181,0.06)",
-    gradient: "linear-gradient(90deg, #7dd3fc, #9b7bff)",
+    bg: "var(--bg)",
+    surface: "var(--card)",
+    card: "var(--card)",
+    text: "var(--text)",
+    muted: "var(--muted)",
+    primary: "var(--accent-1)",
+    accent: "var(--accent-2)",
+    accent1: "var(--accent-1)",
+    accent2: "var(--accent-2)",
+    accent3: "var(--accent-3)",
+    accent4: "var(--accent-4)",
+    accent5: "var(--accent-5)",
+    success: "var(--success)",
+    warn: "var(--warn)",
+    border: "var(--border)",
+    glow: "var(--glow-primary)",
+    glowSecondary: "var(--glow-secondary)",
+    gradient: "var(--gradient-accent)",
 };
+
+// `${hex}15`-style alpha suffixes don't work with CSS variables — mix instead.
+const tint = (color, pct) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
 
 function Toast({ message, visible, type = "success" }) {
     const accentColor = type === "error" ? C.warn : C.success;
@@ -93,7 +98,7 @@ function DeleteModal({ url, onConfirm, onClose }) {
             onClick={onClose}
         >
             <div
-                className="relative rounded-2xl p-6 shadow-2xl w-full max-w-sm"
+                className="relative rounded-2xl p-6 shadow-2xl w-full max-w-sm anim-scale-in"
                 style={{ background: C.card, border: `1px solid ${C.border}` }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -168,7 +173,7 @@ function MiniSparkline({ color }) {
 function StatTile({ icon: Icon, label, value, color, sparkColor }) {
     return (
         <div className="stat-bar flex items-center gap-4" style={{ '--stat-accent': color }}>
-            <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
+            <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: tint(color, 10) }}>
                 <Icon size={22} style={{ color }} />
             </div>
             <div className="flex-1 min-w-0">
@@ -204,7 +209,7 @@ function StatusBadge({ status, expiresAt, oneTimeUse }) {
     const label = isExpired ? "Expired" : status === "archived" ? "Archived" : oneTimeUse ? "Burn" : "Active";
     const color = isExpired || status === "archived" ? "#f87171" : oneTimeUse ? C.warn : C.success;
     return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: `${color}15`, color, border: `1px solid ${color}30` }}>
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: tint(color, 10), color, border: `1px solid ${tint(color, 25)}` }}>
             {oneTimeUse && !isExpired && <Flame size={10} />}
             {label}
         </span>
@@ -445,17 +450,17 @@ export default function Dashboard() {
         return createPortal(
             <div
                 ref={shareMenuRef}
-                className="w-52 rounded-xl shadow-2xl py-1.5"
+                className="w-52 rounded-xl shadow-2xl py-1.5 anim-scale-in"
                 style={{
                     position: "fixed",
                     top,
                     left,
                     zIndex: 9999,
-                    background: "#111827",
-                    border: "1px solid #374151",
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
                 }}
             >
-                <p className="px-3.5 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.muted, borderBottom: "1px solid #1f2937" }}>Share this link</p>
+                <p className="px-3.5 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.muted, borderBottom: "1px solid var(--border)" }}>Share this link</p>
                 {channels.map((ch) => (
                     <a
                         key={ch.name}
@@ -476,13 +481,16 @@ export default function Dashboard() {
     };
 
     const advancedVisible = isDesktop || showAdvanced;
+    // On phones the multi-column table scrolls awkwardly — force the single-
+    // column card view there regardless of the toggle (which is hidden < sm).
+    const effectiveView = isDesktop ? viewMode : "grid";
 
     return (
         <div className="min-h-screen" style={{ background: C.bg }}>
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
                 {/* ─── Header ─── */}
-                <div className="mb-8">
+                <div className="mb-8 anim-fade-in-up">
                     <h1 className="text-3xl font-bold" style={{ color: C.text }}>Dashboard</h1>
                     <p className="mt-1 text-sm" style={{ color: C.muted }}>
                         {userInfo?.name ? `Welcome back, ${userInfo.name}.` : "Manage your short links and track performance."}
@@ -494,11 +502,11 @@ export default function Dashboard() {
 
                     {/* Create New Link */}
                     <div
-                        className="lg:col-span-7 rounded-2xl overflow-hidden flex"
+                        className="lg:col-span-7 rounded-2xl overflow-hidden flex anim-fade-in-up d-1"
                         style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: `inset 0 1px 0 0 rgba(255,255,255,0.04)` }}
                     >
                         <div className="w-[3px] shrink-0 rounded-l-2xl" style={{ background: `linear-gradient(180deg, ${C.primary}, ${C.accent5})` }} />
-                        <div className="p-6">
+                        <div className="p-4 sm:p-6">
                             <div className="flex items-center gap-2 mb-5">
                                 <Zap size={18} style={{ color: C.primary }} />
                                 <h2 className="text-base font-semibold" style={{ color: C.text }}>Create New Link</h2>
@@ -622,7 +630,7 @@ export default function Dashboard() {
                                                 aria-checked={oneTimeUse}
                                                 aria-label="Burn after reading"
                                                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2`}
-                                                style={{ background: oneTimeUse ? C.warn : "#374151", focusRingColor: C.primary }}
+                                                style={{ background: oneTimeUse ? C.warn : "var(--switch-off)", focusRingColor: C.primary }}
                                             >
                                                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition duration-200 ${oneTimeUse ? "translate-x-5" : "translate-x-0"}`} />
                                             </button>
@@ -643,7 +651,8 @@ export default function Dashboard() {
                                     type="submit"
                                     disabled={isCreating}
                                     onClick={() => setShowQrPreview(true)}
-                                    className="w-full py-3 mt-6 bg-white text-black font-bold rounded-lg hover:bg-gray-200 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:bg-white"
+                                    className="btn-press w-full py-3 mt-6 font-bold rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                                    style={{ background: "var(--btn-contrast-bg)", color: "var(--btn-contrast-text)" }}
                                 >
                                     {isCreating ? <Loader2 size={16} className="animate-spin" /> : (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -656,7 +665,7 @@ export default function Dashboard() {
                             {createSuccess && (
                                 <div className="mt-5 rounded-xl overflow-hidden" style={{ border: `1px solid ${C.border}` }}>
                                     {/* Short URL result bar */}
-                                    <div className="px-4 py-3 flex items-center justify-between gap-3" style={{ background: `${C.success}10`, borderBottom: `1px solid ${C.border}` }}>
+                                    <div className="px-4 py-3 flex items-center justify-between gap-3" style={{ background: tint(C.success, 8), borderBottom: `1px solid ${C.border}` }}>
                                         <div className="flex items-center gap-2 text-sm font-medium min-w-0" style={{ color: C.success }}>
                                             <CheckCircle2 size={16} className="shrink-0" />
                                             <a href={createSuccess} target="_blank" rel="noopener noreferrer" className="truncate hover:underline" style={{ ...mono }}>
@@ -698,7 +707,7 @@ export default function Dashboard() {
                                                     />
                                                 </div>
                                                 {scanWarning && (
-                                                    <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: `${C.warn}15`, color: C.warn }}>
+                                                    <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: tint(C.warn, 10), color: C.warn }}>
                                                         <AlertCircle size={12} />
                                                         {scanWarning}
                                                     </div>
@@ -778,7 +787,7 @@ export default function Dashboard() {
 
                                                 {/* Margin */}
                                                 <div className="flex items-center gap-3">
-                                                    <button type="button" onClick={() => setQrMargin(!qrMargin)} role="switch" aria-checked={qrMargin} aria-label="Include margin" className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200" style={{ background: qrMargin ? C.primary : "#374151" }}>
+                                                    <button type="button" onClick={() => setQrMargin(!qrMargin)} role="switch" aria-checked={qrMargin} aria-label="Include margin" className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200" style={{ background: qrMargin ? C.primary : "var(--switch-off)" }}>
                                                         <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition duration-200 ${qrMargin ? "translate-x-4" : "translate-x-0"}`} />
                                                     </button>
                                                     <span className="text-xs font-medium" style={{ color: C.muted }}>Include quiet zone margin</span>
@@ -799,11 +808,11 @@ export default function Dashboard() {
 
                     {/* Quick Stats */}
                     <div
-                        className="lg:col-span-5 rounded-2xl overflow-hidden"
+                        className="lg:col-span-5 rounded-2xl overflow-hidden anim-fade-in-up d-2"
                         style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: `inset 0 1px 0 0 rgba(255,255,255,0.04)` }}
                     >
                         <div className="h-[2px]" style={{ background: C.gradient }} />
-                        <div className="p-6">
+                        <div className="p-4 sm:p-6">
                             <div className="flex items-center gap-2 mb-6">
                                 <BarChart3 size={18} style={{ color: C.accent }} />
                                 <h2 className="text-base font-semibold" style={{ color: C.text }}>Quick Stats</h2>
@@ -820,19 +829,19 @@ export default function Dashboard() {
 
                 {/* ─── Your Links ─── */}
                 <div
-                    className="rounded-2xl overflow-hidden"
+                    className="rounded-2xl overflow-hidden anim-fade-in-up d-3"
                     style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: `inset 0 1px 0 0 rgba(255,255,255,0.04)` }}
                 >
-                    <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ borderBottom: `1px solid ${C.border}` }}>
+                    <div className="px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ borderBottom: `1px solid ${C.border}` }}>
                         <h2 className="text-base font-semibold" style={{ color: C.text }}>Your Links</h2>
                         <div className="flex items-center gap-3">
-                            {/* View toggle */}
-                            <div className="flex gap-1 p-0.5 rounded-lg" style={{ background: C.bg }}>
+                            {/* View toggle (desktop only — mobile is always card view) */}
+                            <div className="hidden sm:flex gap-1 p-0.5 rounded-lg" style={{ background: C.bg }}>
                                 <button
                                     onClick={() => setViewMode("list")}
                                     aria-label="List view"
                                     className="p-1.5 rounded-md transition"
-                                    style={{ color: viewMode === "list" ? C.primary : C.muted, background: viewMode === "list" ? `${C.primary}15` : "transparent" }}
+                                    style={{ color: viewMode === "list" ? C.primary : C.muted, background: viewMode === "list" ? tint(C.primary, 12) : "transparent" }}
                                 >
                                     <List size={14} />
                                 </button>
@@ -840,7 +849,7 @@ export default function Dashboard() {
                                     onClick={() => setViewMode("grid")}
                                     aria-label="Grid view"
                                     className="p-1.5 rounded-md transition"
-                                    style={{ color: viewMode === "grid" ? C.primary : C.muted, background: viewMode === "grid" ? `${C.primary}15` : "transparent" }}
+                                    style={{ color: viewMode === "grid" ? C.primary : C.muted, background: viewMode === "grid" ? tint(C.primary, 12) : "transparent" }}
                                 >
                                     <LayoutGrid size={14} />
                                 </button>
@@ -887,28 +896,28 @@ export default function Dashboard() {
                                 </button>
                             )}
                         </div>
-                    ) : viewMode === "list" ? (
+                    ) : effectiveView === "list" ? (
                         /* ── List View ── */
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="text-xs uppercase tracking-wider font-medium" style={{ color: C.muted, borderBottom: `1px solid ${C.border}` }}>
-                                        <th className="px-6 py-3">Short URL</th>
-                                        <th className="px-6 py-3">Original URL</th>
-                                        <th className="px-6 py-3 text-center">Clicks</th>
-                                        <th className="px-6 py-3 text-center">Status</th>
-                                        <th className="px-6 py-3 text-right">Actions</th>
+                                        <th className="px-4 sm:px-6 py-3">Short URL</th>
+                                        <th className="px-4 sm:px-6 py-3">Original URL</th>
+                                        <th className="px-4 sm:px-6 py-3 text-center">Clicks</th>
+                                        <th className="px-4 sm:px-6 py-3 text-center">Status</th>
+                                        <th className="px-4 sm:px-6 py-3 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredUrls.map((url) => {
                                         const shortUrl = `${BASE_URL}/${url.customAlias || url.shortCode}`;
                                         return (
-                                            <tr key={url._id} className="group transition-colors" style={{ borderBottom: `1px solid ${C.border}40` }}
-                                                onMouseEnter={(e) => e.currentTarget.style.background = `${C.primary}05`}
+                                            <tr key={url._id} className="group transition-colors" style={{ borderBottom: `1px solid ${tint(C.border, 40)}` }}
+                                                onMouseEnter={(e) => e.currentTarget.style.background = tint(C.primary, 4)}
                                                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                                             >
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 sm:px-6 py-4">
                                                     <div className="flex items-center gap-3">
                                                         <a href={shortUrl} target="_blank" rel="noopener noreferrer" className="chip-short-url truncate max-w-[180px] no-underline" style={{ textDecoration: 'none' }}>
                                                             /{url.customAlias || url.shortCode}
@@ -925,21 +934,21 @@ export default function Dashboard() {
                                                         {openShareId === url._id && renderShareMenu(url)}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 sm:px-6 py-4">
                                                     <a href={url.originalUrl} target="_blank" rel="noopener noreferrer" title={url.originalUrl} className="text-sm transition flex items-center gap-1.5 max-w-xs group/link" style={{ color: C.muted }}>
                                                         <span className="truncate">{truncate(url.originalUrl)}</span>
                                                         <ExternalLink size={12} className="shrink-0 opacity-0 group-hover/link:opacity-100 transition" />
                                                     </a>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span className="text-sm font-semibold px-2.5 py-0.5 rounded-full" style={{ color: C.text, background: `${C.primary}10`, ...mono }}>
+                                                <td className="px-4 sm:px-6 py-4 text-center">
+                                                    <span className="text-sm font-semibold px-2.5 py-0.5 rounded-full" style={{ color: C.text, background: tint(C.primary, 8), ...mono }}>
                                                         {(url.analytics?.totalClicks || 0).toLocaleString()}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
+                                                <td className="px-4 sm:px-6 py-4 text-center">
                                                     <StatusBadge status={url.status} expiresAt={url.expiresAt} oneTimeUse={url.oneTimeUse} />
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 sm:px-6 py-4">
                                                     <div className="flex items-center justify-end gap-1">
                                                         <button onClick={() => setQrUrl(shortUrl)} aria-label="QR Code" className="p-2 rounded-lg transition hover:bg-white/10" style={{ color: C.muted }} title="QR Code">
                                                             <QrCode size={15} />
@@ -960,7 +969,7 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         /* ── Grid View ── */
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 sm:p-6">
                             {filteredUrls.map((url) => {
                                 const shortUrl = `${BASE_URL}/${url.customAlias || url.shortCode}`;
                                 return (
@@ -979,7 +988,7 @@ export default function Dashboard() {
                                             {url.originalUrl}
                                         </p>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: `${C.primary}10`, color: C.primary, ...mono }}>
+                                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: tint(C.primary, 8), color: C.primary, ...mono }}>
                                                 {(url.analytics?.totalClicks || 0).toLocaleString()} clicks
                                             </span>
                                             <div className="flex items-center gap-1">

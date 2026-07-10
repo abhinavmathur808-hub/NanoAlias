@@ -73,20 +73,23 @@ function formatReferrer(ref) {
     } catch { return ref; }
 }
 
-/* ─── Bar colors per section ─── */
+/* ─── Bar colors per section (theme-reactive) ─── */
 const ACCENT = {
-    location: "#7dd3fc",
-    device: "#9b7bff",
-    referrer: "#ff6fb5",
+    location: "var(--accent-1)",
+    device: "var(--accent-5)",
+    referrer: "var(--accent-2)",
 };
+
+/* Alpha tint helper — hex+suffix doesn't work with CSS variables */
+const tint = (color, pct) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
 
 /* ─── Sub-components ─── */
 function SummaryCard({ icon: Icon, label, value, accent }) {
     return (
-        <div className="rounded-xl border border-white/5 p-5 flex items-center gap-4" style={{ background: '#0b0b0b' }}>
+        <div className="rounded-xl border border-white/5 p-5 flex items-center gap-4" style={{ background: 'var(--card)' }}>
             <div
                 className="h-11 w-11 rounded-lg flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${accent}15` }}
+                style={{ backgroundColor: tint(accent, 10) }}
             >
                 <Icon size={20} style={{ color: accent }} />
             </div>
@@ -94,7 +97,7 @@ function SummaryCard({ icon: Icon, label, value, accent }) {
                 <p className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
                     {label}
                 </p>
-                <p className="text-xl font-bold mt-0.5" style={{ color: '#e6eef8' }}>{value}</p>
+                <p className="text-xl font-bold mt-0.5" style={{ color: 'var(--text)' }}>{value}</p>
             </div>
         </div>
     );
@@ -103,7 +106,7 @@ function SummaryCard({ icon: Icon, label, value, accent }) {
 function CustomTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
-        <div className="rounded-lg px-3 py-2 shadow-lg text-sm" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+        <div className="rounded-lg px-3 py-2 shadow-lg text-sm" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
             <p className="text-slate-400 mb-0.5">{label}</p>
             <p className="text-white font-semibold">{payload[0].value} clicks</p>
         </div>
@@ -112,7 +115,7 @@ function CustomTooltip({ active, payload, label }) {
 
 function ProgressList({ title, items, accent, maxValue, emptyText = "No data yet." }) {
     return (
-        <div className="rounded-xl border border-white/5 p-5" style={{ background: '#0b0b0b' }}>
+        <div className="rounded-xl border border-white/5 p-5" style={{ background: 'var(--card)' }}>
             <h3 className="text-xs font-semibold text-slate-400 mb-4 uppercase tracking-wider">{title}</h3>
             {items.length === 0 ? (
                 <p className="text-slate-600 text-xs py-6 text-center leading-relaxed">{emptyText}</p>
@@ -142,7 +145,7 @@ function ProgressList({ title, items, accent, maxValue, emptyText = "No data yet
 }
 
 /* ─── Quick Action Button (icon-only with tooltip) ─── */
-function ActionBtn({ icon: Icon, label, onClick, accent = "#9aa7b8" }) {
+function ActionBtn({ icon: Icon, label, onClick, accent = "var(--muted)" }) {
     return (
         <button
             onClick={onClick}
@@ -186,10 +189,10 @@ function AskPanel({ urlId }) {
 
     return (
         <div
-            className="rounded-xl p-5 mb-6"
+            className="rounded-xl p-5 mb-6 anim-fade-in-up d-2"
             style={{
-                background: "#0b0b0b",
-                border: "1px solid rgba(155,123,255,0.25)",
+                background: "var(--card)",
+                border: "1px solid color-mix(in srgb, var(--accent-5) 25%, transparent)",
                 boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.03)",
             }}
         >
@@ -198,7 +201,7 @@ function AskPanel({ urlId }) {
                     className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
                     style={{ background: "rgba(155,123,255,0.12)" }}
                 >
-                    <Sparkles size={16} style={{ color: "#9b7bff" }} />
+                    <Sparkles size={16} style={{ color: "var(--accent-5)" }} />
                 </div>
                 <div>
                     <h2 className="text-sm font-semibold text-white leading-tight">Ask your data</h2>
@@ -221,16 +224,16 @@ function AskPanel({ urlId }) {
                     aria-label="Ask a question about your analytics"
                     maxLength={500}
                     className="flex-1 px-4 py-2.5 rounded-lg text-sm outline-none transition-all focus:ring-2"
-                    style={{ background: "#000", color: "#e6eef8", border: "1px solid #1a1a1a" }}
-                    onFocus={(e) => (e.target.style.borderColor = "#9b7bff")}
-                    onBlur={(e) => (e.target.style.borderColor = "#1a1a1a")}
+                    style={{ background: "var(--bg)", color: "var(--text)", border: "1px solid var(--border)" }}
+                    onFocus={(e) => (e.target.style.borderColor = "var(--accent-5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
                 />
                 <button
                     type="submit"
                     disabled={isLoading || !question.trim()}
                     aria-label="Send question"
                     className="h-[42px] w-[42px] shrink-0 rounded-lg flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
-                    style={{ background: "linear-gradient(90deg, #7dd3fc, #9b7bff)", color: "#000" }}
+                    style={{ background: "var(--gradient-accent)", color: "var(--bg)" }}
                 >
                     {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>
@@ -246,7 +249,7 @@ function AskPanel({ urlId }) {
                             disabled={isLoading}
                             onClick={() => submit(s)}
                             className="px-3 py-1.5 rounded-full text-xs transition-all hover:bg-white/5 disabled:opacity-40"
-                            style={{ color: "#9aa7b8", border: "1px solid #1a1a1a" }}
+                            style={{ color: "var(--muted)", border: "1px solid var(--border)" }}
                         >
                             {s}
                         </button>
@@ -261,11 +264,11 @@ function AskPanel({ urlId }) {
                     style={{
                         background: "linear-gradient(90deg, rgba(125,211,252,0.06), rgba(155,123,255,0.06))",
                         border: "1px solid rgba(155,123,255,0.2)",
-                        color: "#e6eef8",
+                        color: "var(--text)",
                     }}
                 >
                     <div className="flex items-start gap-2">
-                        <Sparkles size={15} className="shrink-0 mt-0.5" style={{ color: "#9b7bff" }} />
+                        <Sparkles size={15} className="shrink-0 mt-0.5" style={{ color: "var(--accent-5)" }} />
                         <p>{answer}</p>
                     </div>
                 </div>
@@ -395,15 +398,15 @@ export default function Analytics() {
     /* ─── Loading / Error States ─── */
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ background: '#000000' }}>
-                <Loader2 size={32} className="animate-spin" style={{ color: '#7dd3fc' }} />
+            <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+                <Loader2 size={32} className="animate-spin" style={{ color: 'var(--accent-1)' }} />
             </div>
         );
     }
 
     if (isError || !data?.success) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#000000' }}>
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: 'var(--bg)' }}>
                 <AlertCircle size={36} className="text-red-400" />
                 <p className="text-slate-400">Failed to load analytics data.</p>
                 <button
@@ -421,11 +424,11 @@ export default function Analytics() {
     const maxRef = referrerItems[0]?.value || 1;
 
     return (
-        <div className="min-h-screen" style={{ background: '#000000' }}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
                 {/* Header + Quick Actions */}
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-8 anim-fade-in-up">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                         <button
                             onClick={() => navigate("/dashboard")}
@@ -451,7 +454,7 @@ export default function Analytics() {
                             icon={copied ? Check : Copy}
                             label="Copy Link"
                             onClick={handleCopy}
-                            accent={copied ? "#34d399" : "#9aa7b8"}
+                            accent={copied ? "var(--success)" : "var(--muted)"}
                         />
                         <ActionBtn icon={Download} label="Download QR" onClick={() => setIsQrModalOpen(true)} />
                         <ActionBtn
@@ -469,8 +472,8 @@ export default function Analytics() {
                         onClick={() => setIsQrModalOpen(false)}
                     >
                         <div
-                            className="relative rounded-2xl p-6 shadow-2xl w-full max-w-sm"
-                            style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}
+                            className="relative rounded-2xl p-6 shadow-2xl w-full max-w-sm anim-scale-in"
+                            style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Close Button */}
@@ -507,7 +510,7 @@ export default function Analytics() {
                             <button
                                 onClick={downloadQRCode}
                                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                                style={{ background: 'linear-gradient(90deg, #7dd3fc, #9b7bff)', color: '#000' }}
+                                style={{ background: 'var(--gradient-accent)', color: 'var(--bg)' }}
                             >
                                 <Download size={16} />
                                 Download Image
@@ -517,24 +520,24 @@ export default function Analytics() {
                 )}
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 anim-fade-in-up d-1">
                     <SummaryCard
                         icon={MousePointerClick}
                         label="Total Clicks"
                         value={totalClicks.toLocaleString()}
-                        accent="#7dd3fc"
+                        accent="var(--accent-1)"
                     />
                     <SummaryCard
                         icon={Globe}
                         label="Top Location"
                         value={topLocation === "—" ? "—" : countryLabel(topLocation)}
-                        accent="#ff6fb5"
+                        accent="var(--accent-2)"
                     />
                     <SummaryCard
                         icon={Monitor}
                         label="Top Device"
                         value={topDevice.charAt(0).toUpperCase() + topDevice.slice(1)}
-                        accent="#9b7bff"
+                        accent="var(--accent-5)"
                     />
                 </div>
 
@@ -542,7 +545,7 @@ export default function Analytics() {
                 <AskPanel urlId={id} />
 
                 {/* Clicks Over Time — Area Chart */}
-                <div className="rounded-xl border border-white/5 p-5 mb-6" style={{ background: '#0b0b0b' }}>
+                <div className="rounded-xl border border-white/5 p-5 mb-6 anim-fade-in-up d-3" style={{ background: 'var(--card)' }}>
                     <h2 className="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">
                         Clicks Over Time
                     </h2>
@@ -588,7 +591,7 @@ export default function Analytics() {
                 </div>
 
                 {/* Progress Bar Sections */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 anim-fade-in-up d-4">
                     <ProgressList
                         title="Top Locations"
                         items={locationItems}

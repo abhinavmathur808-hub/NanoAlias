@@ -11,6 +11,7 @@
   --text: #e6eef8;
   --muted: #9aa7b8;
   --border: #1a1a1a;
+  --border-soft: rgba(26, 26, 26, 0.6);
   --radius: 12px;
 
   /* Vibrant accent palette */
@@ -42,8 +43,67 @@
   --gradient-chip: linear-gradient(90deg, var(--accent-1), var(--accent-2));
   --gradient-accent-alt: linear-gradient(135deg, var(--accent-1), var(--accent-2));
 
+  /* Navbar / contrast button */
+  --nav-bg: rgba(0, 0, 0, 0.85);
+  --nav-bg-solid: rgba(0, 0, 0, 0.95);
+  --btn-contrast-bg: #ffffff;
+  --btn-contrast-text: #000000;
+  --switch-off: #374151;
+
+  /* Charts */
+  --chart-grid: #1e293b;
+  --chart-tick: #94a3b8;
+
+  /* Short-url chip */
+  --chip-bg: rgba(255, 255, 255, 0.05);
+  --chip-border: rgba(255, 255, 255, 0.1);
+  --chip-text: #CEB372;
+  --chip-text-hover: #e0c97f;
+
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(125, 211, 252, 0.18);
+}
+
+/* ─── Light Theme ─── */
+:root[data-theme="light"] {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #5b6b7f;
+  --border: #e2e8f0;
+  --border-soft: rgba(15, 23, 42, 0.1);
+
+  /* Accents darkened for contrast on light surfaces */
+  --accent-1: #0284c7;
+  --accent-2: #db2777;
+  --accent-3: #16a34a;
+  --accent-4: #ea580c;
+  --accent-5: #7c3aed;
+
+  --success: #059669;
+  --warn: #d97706;
+  --error: #dc2626;
+
+  --glass: rgba(2, 132, 199, 0.08);
+  --glow-primary: rgba(2, 132, 199, 0.1);
+  --glow-secondary: rgba(219, 39, 119, 0.08);
+
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-bg-solid: rgba(255, 255, 255, 0.97);
+  --btn-contrast-bg: #0f172a;
+  --btn-contrast-text: #ffffff;
+  --switch-off: #cbd5e1;
+
+  --chart-grid: #e2e8f0;
+  --chart-tick: #64748b;
+
+  --chip-bg: rgba(15, 23, 42, 0.05);
+  --chip-border: rgba(15, 23, 42, 0.12);
+  --chip-text: #92700c;
+  --chip-text-hover: #705607;
+
+  --focus-ring: 0 0 0 3px rgba(2, 132, 199, 0.25);
 }
 
 * {
@@ -57,6 +117,122 @@ body {
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Smooth theme switch (class added briefly by useTheme) ─── */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, fill 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Light-theme remaps for hardcoded dark utility classes.
+   The app was originally styled dark-only with literal slate/white
+   Tailwind classes; these scoped overrides re-skin every page at
+   once without touching each component.
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="light"] .text-white {
+  color: var(--text);
+}
+
+/* Keep white text on colored/gradient buttons */
+[data-theme="light"] .bg-gradient-to-r.text-white,
+[data-theme="light"] .pill-gradient {
+  color: #ffffff;
+}
+
+[data-theme="light"] .hover\:text-white:hover {
+  color: var(--text);
+}
+
+[data-theme="light"] .text-slate-200 {
+  color: #1e293b;
+}
+
+[data-theme="light"] .text-slate-300 {
+  color: #334155;
+}
+
+[data-theme="light"] .text-slate-400,
+[data-theme="light"] .hover\:text-slate-300:hover {
+  color: #475569;
+}
+
+[data-theme="light"] .text-slate-500 {
+  color: #64748b;
+}
+
+[data-theme="light"] .text-slate-600 {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .placeholder-slate-500::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .border-slate-600,
+[data-theme="light"] .border-slate-700,
+[data-theme="light"] .border-slate-700\/40,
+[data-theme="light"] .border-slate-700\/60,
+[data-theme="light"] .border-slate-500\/30 {
+  border-color: var(--border);
+}
+
+[data-theme="light"] .bg-white\/5,
+[data-theme="light"] .bg-slate-800\/40,
+[data-theme="light"] .bg-slate-800\/60,
+[data-theme="light"] .bg-slate-700\/40,
+[data-theme="light"] .bg-slate-700\/50,
+[data-theme="light"] .bg-slate-500\/10 {
+  background-color: rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.07);
+}
+
+[data-theme="light"] .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .hover\:bg-white\/10:hover,
+[data-theme="light"] .hover\:bg-slate-700\/50:hover {
+  background-color: rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .bg-\[\#0b0b0b\] {
+  background-color: var(--card);
+}
+
+/* ─── Landing hero (art-directed splash) ───
+   The page + the black "masking" coins behind icons follow the theme;
+   the central ruby keeps white text on red in BOTH themes. Scoped to
+   .landing-hero so none of this leaks to other pages. */
+[data-theme="light"] .landing-hero .bg-black {
+  background-color: var(--bg);
+}
+
+.landing-hero .ruby-content {
+  color: #fff;
+}
+
+[data-theme="light"] .landing-hero .ruby-content .text-white {
+  color: #fff;
+}
+
+/* Recharts theming (SVG presentation attributes lose to CSS) */
+[data-theme="light"] .recharts-cartesian-grid line {
+  stroke: var(--chart-grid);
+}
+
+[data-theme="light"] .recharts-cartesian-axis-tick text {
+  fill: var(--chart-tick);
 }
 
 /* ─── Focus Ring ─── */
@@ -93,21 +269,22 @@ body {
 
 /* ─── Short URL chip ─── */
 .chip-short-url {
-  background: rgba(255, 255, 255, 0.05);
-  color: #CEB372;
+  background: var(--chip-bg);
+  color: var(--chip-text);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 0.8125rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--chip-border);
   letter-spacing: 0.025em;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .chip-short-url:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e0c97f;
+  background: var(--chip-bg);
+  color: var(--chip-text-hover);
+  filter: brightness(1.1);
 }
 
 /* ─── Left accent bar for stat tiles ─── */
@@ -145,6 +322,152 @@ body {
   background: var(--toast-accent, var(--accent-1));
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gradientShift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes floatY {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Entrance utilities */
+.anim-fade-in-up {
+  animation: fadeInUp 0.55s cubic-bezier(0.22, 0.9, 0.35, 1) both;
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.anim-scale-in {
+  animation: scaleIn 0.28s cubic-bezier(0.22, 0.9, 0.35, 1) both;
+}
+
+.anim-slide-down {
+  animation: slideDown 0.25s ease-out both;
+}
+
+/* Stagger delays */
+.d-1 {
+  animation-delay: 0.07s;
+}
+
+.d-2 {
+  animation-delay: 0.14s;
+}
+
+.d-3 {
+  animation-delay: 0.21s;
+}
+
+.d-4 {
+  animation-delay: 0.28s;
+}
+
+.d-5 {
+  animation-delay: 0.35s;
+}
+
+.d-6 {
+  animation-delay: 0.42s;
+}
+
+/* Micro-interactions */
+.btn-press {
+  transition: transform 0.12s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+.hover-raise {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-raise:hover {
+  transform: translateY(-2px);
+}
+
+/* Animated gradient text (hero / headings) */
+.gradient-text-animated {
+  background: var(--gradient-chip);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 6s ease infinite;
+}
+
+.float-y {
+  animation: floatY 4s ease-in-out infinite;
+}
+
 /* ─── Reduced Motion ─── */
 @media (prefers-reduced-motion: reduce) {
 
@@ -162,7 +485,8 @@ body {
     box-shadow: none;
   }
 
-  .card-hover:hover {
+  .card-hover:hover,
+  .hover-raise:hover {
     transform: none;
     box-shadow: none;
   }

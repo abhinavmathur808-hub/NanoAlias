@@ -3,13 +3,13 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Download, X } from "lucide-react";
 
 const C = {
-    bg: "#000000",
-    card: "#0b0b0b",
-    text: "#e6eef8",
-    muted: "#9aa7b8",
-    primary: "#7dd3fc",
-    accent: "#ff6fb5",
-    border: "#1a1a1a",
+    bg: "var(--bg)",
+    card: "var(--card)",
+    text: "var(--text)",
+    muted: "var(--muted)",
+    primary: "var(--accent-1)",
+    accent: "var(--accent-2)",
+    border: "var(--border)",
 };
 
 export default function QrModal({ url, onClose }) {
@@ -30,7 +30,7 @@ export default function QrModal({ url, onClose }) {
             onClick={onClose}
         >
             <div
-                className="relative rounded-2xl p-8 shadow-2xl w-full max-w-sm"
+                className="relative rounded-2xl p-6 sm:p-8 shadow-2xl w-full max-w-sm anim-scale-in"
                 style={{ background: C.card, border: `1px solid ${C.border}` }}
                 onClick={(e) => e.stopPropagation()}
             >

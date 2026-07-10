@@ -101,31 +101,31 @@ function UsersTable({ users, searchQuery }) {
             <table className="w-full text-left">
                 <thead>
                     <tr className="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-700/60">
-                        <th className="px-6 py-3 font-medium">Name</th>
-                        <th className="px-6 py-3 font-medium">Email</th>
-                        <th className="px-6 py-3 font-medium text-center">Role</th>
-                        <th className="px-6 py-3 font-medium text-center">Verified</th>
-                        <th className="px-6 py-3 font-medium text-center">Links</th>
-                        <th className="px-6 py-3 font-medium text-right">Joined</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium">Name</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium">Email</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-center">Role</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-center">Verified</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-center">Links</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-right">Joined</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/40">
                     {filtered.map((user) => (
                         <tr key={user._id} className="hover:bg-slate-800/40 transition">
-                            <td className="px-6 py-4 text-sm text-white font-medium">
+                            <td className="px-4 sm:px-6 py-4 text-sm text-white font-medium">
                                 {user.name}
                             </td>
-                            <td className="px-6 py-4 text-sm text-slate-300">{user.email}</td>
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-4 sm:px-6 py-4 text-sm text-slate-300">{user.email}</td>
+                            <td className="px-4 sm:px-6 py-4 text-center">
                                 <RoleBadge role={user.role} />
                             </td>
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-4 sm:px-6 py-4 text-center">
                                 <VerifiedBadge verified={user.isVerified} />
                             </td>
-                            <td className="px-6 py-4 text-center text-sm text-white font-semibold">
+                            <td className="px-4 sm:px-6 py-4 text-center text-sm text-white font-semibold">
                                 {user.linkCount ?? 0}
                             </td>
-                            <td className="px-6 py-4 text-right text-sm text-slate-400">
+                            <td className="px-4 sm:px-6 py-4 text-right text-sm text-slate-400">
                                 {new Date(user.createdAt).toLocaleDateString()}
                             </td>
                         </tr>
@@ -165,23 +165,23 @@ function LinksTable({ urls, searchQuery, onToggle, togglingId }) {
             <table className="w-full text-left">
                 <thead>
                     <tr className="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-700/60">
-                        <th className="px-6 py-3 font-medium">Short Code</th>
-                        <th className="px-6 py-3 font-medium">Original URL</th>
-                        <th className="px-6 py-3 font-medium">Owner</th>
-                        <th className="px-6 py-3 font-medium text-center">Clicks</th>
-                        <th className="px-6 py-3 font-medium text-center">Status</th>
-                        <th className="px-6 py-3 font-medium text-right">Action</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium">Short Code</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium">Original URL</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium">Owner</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-center">Clicks</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-center">Status</th>
+                        <th className="px-4 sm:px-6 py-3 font-medium text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/40">
                     {filtered.map((url) => (
                         <tr key={url._id} className="hover:bg-slate-800/40 transition">
-                            <td className="px-6 py-4">
+                            <td className="px-4 sm:px-6 py-4">
                                 <span className="text-primary-light text-sm font-medium">
                                     /{url.customAlias || url.shortCode}
                                 </span>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 sm:px-6 py-4">
                                 <a
                                     href={url.originalUrl}
                                     target="_blank"
@@ -197,13 +197,13 @@ function LinksTable({ urls, searchQuery, onToggle, togglingId }) {
                                     />
                                 </a>
                             </td>
-                            <td className="px-6 py-4 text-sm text-slate-400">
+                            <td className="px-4 sm:px-6 py-4 text-sm text-slate-400">
                                 {url.user?.email || "—"}
                             </td>
-                            <td className="px-6 py-4 text-center text-sm text-white font-semibold">
+                            <td className="px-4 sm:px-6 py-4 text-center text-sm text-white font-semibold">
                                 {(url.analytics?.totalClicks || 0).toLocaleString()}
                             </td>
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-4 sm:px-6 py-4 text-center">
                                 <span
                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${url.status === "active"
                                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
@@ -213,7 +213,7 @@ function LinksTable({ urls, searchQuery, onToggle, togglingId }) {
                                     {url.status === "active" ? "Active" : "Disabled"}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-4 sm:px-6 py-4 text-right">
                                 <StatusToggleButton
                                     urlId={url._id}
                                     currentStatus={url.status}
@@ -265,8 +265,8 @@ export default function AdminPanel() {
     const isError = activeTab === "users" ? usersError : urlsError;
 
     return (
-        <div className="min-h-screen" style={{ background: '#000000' }}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
                 {/* Header */}
                 <div className="mb-8 flex items-center gap-3">
@@ -274,7 +274,7 @@ export default function AdminPanel() {
                         <Shield size={22} className="text-amber-400" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-white">Admin Panel</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
                         <p className="text-slate-400 text-sm">
                             System-wide management console
                         </p>
@@ -283,7 +283,7 @@ export default function AdminPanel() {
 
                 {/* Tabs + Search */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div className="flex gap-1 rounded-xl p-1" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                    <div className="flex gap-1 rounded-xl p-1" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -321,28 +321,28 @@ export default function AdminPanel() {
                                     : "Search links or owners…"
                             }
                             className="w-full pl-9 pr-3 py-2.5 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 transition"
-                            style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}
+                            style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}
                         />
                     </div>
                 </div>
 
                 {/* Stats bar */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                         <p className="text-2xl font-bold text-white">{users.length}</p>
                         <p className="text-xs text-slate-400">Total Users</p>
                     </div>
-                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                         <p className="text-2xl font-bold text-white">
                             {users.filter((u) => u.role === "admin").length}
                         </p>
                         <p className="text-xs text-slate-400">Admins</p>
                     </div>
-                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                         <p className="text-2xl font-bold text-white">{urls.length}</p>
                         <p className="text-xs text-slate-400">Total Links</p>
                     </div>
-                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                    <div className="rounded-xl px-4 py-3 text-center" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                         <p className="text-2xl font-bold text-white">
                             {urls.filter((u) => u.status === "active").length}
                         </p>
@@ -351,7 +351,7 @@ export default function AdminPanel() {
                 </div>
 
                 {/* Content */}
-                <div className="rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                <div className="rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
                     {isLoading ? (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 size={28} className="animate-spin text-primary-light" />

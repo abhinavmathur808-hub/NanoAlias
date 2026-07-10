@@ -113,7 +113,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#000000' }}>
+        <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
             <div className="w-full max-w-md">
                 {/* Branding */}
                 <div className="text-center mb-8">
@@ -128,12 +128,12 @@ export default function Login() {
                 </div>
 
                 {/* Card */}
-                <div className="rounded-2xl p-8 shadow-2xl backdrop-blur-sm" style={{ background: '#0b0b0b', border: '1px solid rgba(26,26,26,0.6)' }}>
+                <div className="rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm" style={{ background: 'var(--card)', border: '1px solid var(--border-soft)' }}>
 
                     {/* ─── LOGIN VIEW ─── */}
                     {view === "login" && (
                         <>
-                            <h2 className="text-xl font-semibold mb-6" style={{ color: '#e6eef8' }}>
+                            <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text)' }}>
                                 Welcome back
                             </h2>
 
@@ -168,7 +168,7 @@ export default function Login() {
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="you@example.com"
                                         className="w-full px-4 py-3 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition"
-                                        style={{ background: '#000000', border: '1px solid rgba(26,26,26,0.6)' }}
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border-soft)' }}
                                     />
                                 </div>
 
@@ -197,7 +197,7 @@ export default function Login() {
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••"
                                             className="w-full px-4 py-3 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition"
-                                            style={{ background: '#000000', border: '1px solid rgba(26,26,26,0.6)' }}
+                                            style={{ background: 'var(--bg)', border: '1px solid var(--border-soft)' }}
                                         />
                                         <button
                                             type="button"
@@ -303,7 +303,7 @@ export default function Login() {
                                         onChange={(e) => setResetEmail(e.target.value)}
                                         placeholder="you@example.com"
                                         className="w-full px-4 py-3 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition"
-                                        style={{ background: '#000000', border: '1px solid rgba(26,26,26,0.6)' }}
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border-soft)' }}
                                     />
                                 </div>
 
@@ -373,7 +373,7 @@ export default function Login() {
                                         placeholder="000000"
                                         autoComplete="one-time-code"
                                         className="w-full px-4 py-4 rounded-lg text-white text-center text-2xl font-mono tracking-[0.5em] placeholder-gray-600 focus:outline-none focus:border-[#CEB372]/50 focus:ring-1 focus:ring-[#CEB372]/30 transition-all duration-200"
-                                        style={{ background: '#000000', border: '1px solid rgba(26,26,26,0.6)' }}
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border-soft)' }}
                                     />
                                     <p className="mt-2 text-xs text-gray-500 text-center">
                                         Code expires in 5 minutes
@@ -393,7 +393,7 @@ export default function Login() {
                                         placeholder="••••••••"
                                         minLength={6}
                                         className="w-full px-4 py-3 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition"
-                                        style={{ background: '#000000', border: '1px solid rgba(26,26,26,0.6)' }}
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border-soft)' }}
                                     />
                                     <ul className="mt-2 space-y-1">
                                         {[

@@ -56,7 +56,7 @@ export default function Unlock() {
                 </div>
 
                 {/* Card */}
-                <div className="bg-surface-light border border-slate-700/60 rounded-2xl p-8 shadow-2xl shadow-indigo-950/20 backdrop-blur-sm">
+                <div className="bg-surface-light border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-indigo-950/20 backdrop-blur-sm">
                     <div className="flex flex-col items-center mb-6">
                         <div className="h-14 w-14 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
                             <ShieldCheck size={28} className="text-amber-400" />

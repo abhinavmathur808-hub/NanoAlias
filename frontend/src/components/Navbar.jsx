@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Shield, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
+import { Shield, LogOut, LayoutDashboard, Menu, X, Sun, Moon } from "lucide-react";
 import nanoaliasLogo from "../assets/nanoalias_logo.png";
 import { useState } from "react";
 import { useLogoutMutation } from "../store/usersApiSlice";
 import { logout } from "../store/authSlice";
+import useTheme from "../hooks/useTheme";
 
 export default function Navbar() {
     const { userInfo, token } = useSelector((state) => state.auth);
@@ -12,6 +13,7 @@ export default function Navbar() {
     const navigate = useNavigate();
     const [logoutApi] = useLogoutMutation();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { isDark, toggleTheme } = useTheme();
 
     const handleLogout = async () => {
         try {
@@ -30,7 +32,7 @@ export default function Navbar() {
         <nav
             id="navbar"
             className="sticky top-0 z-50 border-b backdrop-blur-xl"
-            style={{ background: 'rgba(0,0,0,0.85)', borderColor: 'rgba(26,26,26,0.6)' }}
+            style={{ background: 'var(--nav-bg)', borderColor: 'var(--border-soft)' }}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
@@ -49,6 +51,15 @@ export default function Navbar() {
 
                     {/* Desktop nav */}
                     <div className="hidden sm:flex items-center gap-3">
+                        {/* Theme toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+                            title={isDark ? "Light mode" : "Dark mode"}
+                            className="btn-press p-2 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition"
+                        >
+                            {isDark ? <Sun size={17} /> : <Moon size={17} />}
+                        </button>
 
                         {token && userInfo ? (
                             <>
@@ -87,7 +98,7 @@ export default function Navbar() {
                                 <Link
                                     to="/register"
                                     className="px-5 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#E24A29] transition-colors duration-200 shadow-lg shadow-[#FF5A36]/20"
-                                    style={{ background: '#FF5A36' }}
+                                    style={{ background: '#FF5A36', color: '#fff' }}
                                 >
                                     Sign Up
                                 </Link>
@@ -95,19 +106,28 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile hamburger */}
-                    <button
-                        className="sm:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition"
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                    >
-                        {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-                    </button>
+                    {/* Mobile: theme toggle + hamburger */}
+                    <div className="sm:hidden flex items-center gap-1">
+                        <button
+                            onClick={toggleTheme}
+                            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+                            className="btn-press p-2 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition"
+                        >
+                            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
+                        <button
+                            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition"
+                            onClick={() => setMobileOpen(!mobileOpen)}
+                        >
+                            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {/* Mobile dropdown */}
             {mobileOpen && (
-                <div className="sm:hidden border-t backdrop-blur-xl px-4 pb-4 pt-2 space-y-1" style={{ borderColor: 'rgba(26,26,26,0.6)', background: 'rgba(0,0,0,0.95)' }}>
+                <div className="sm:hidden border-t backdrop-blur-xl px-4 pb-4 pt-2 space-y-1 anim-slide-down" style={{ borderColor: 'var(--border-soft)', background: 'var(--nav-bg-solid)' }}>
 
                     {token && userInfo ? (
                         <>
@@ -150,7 +170,7 @@ export default function Navbar() {
                                 to="/register"
                                 onClick={closeMobile}
                                 className="block px-3 py-2.5 rounded-lg text-sm font-semibold text-center text-white hover:bg-[#E24A29] transition-colors duration-200 shadow-lg shadow-[#FF5A36]/20"
-                                style={{ background: '#FF5A36' }}
+                                style={{ background: '#FF5A36', color: '#fff' }}
                             >
                                 Sign Up
                             </Link>

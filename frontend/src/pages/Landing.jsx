@@ -112,7 +112,7 @@ export default function Landing() {
     });
 
     return (
-        <div className="min-h-screen bg-black relative overflow-hidden flex flex-col items-center justify-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <div className="min-h-screen landing-hero relative overflow-hidden flex flex-col items-center justify-center" style={{ fontFamily: "'DM Sans', sans-serif", background: 'var(--bg)' }}>
             {/* ── Rich SVG Sunburst + Stippled Halo ── */}
             <svg
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] md:w-[1200px] md:h-[1200px] pointer-events-none"
@@ -203,8 +203,8 @@ export default function Landing() {
 
             {/* ── Tagline ── */}
             <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-full z-10 flex justify-center px-4">
-                <div className="bg-black px-3 py-1 rounded">
-                    <h1 className="text-3xl md:text-5xl font-black text-white text-center">
+                <div className="bg-black px-3 py-1 rounded max-w-full">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-white text-center leading-tight">
                         Create links that do more than redirect!
                     </h1>
                 </div>
@@ -212,7 +212,7 @@ export default function Landing() {
 
             {/* ── Central Ruby Shape ── */}
             <div
-                className="relative z-10 w-[200px] h-[200px] sm:w-[255px] sm:h-[255px] md:w-[310px] md:h-[310px]
+                className="relative z-10 w-[230px] h-[230px] sm:w-[255px] sm:h-[255px] md:w-[310px] md:h-[310px]
                            rotate-45 transition-transform duration-300 hover:scale-[1.03]"
                 style={{
                     borderRadius: "18%",
@@ -220,14 +220,14 @@ export default function Landing() {
                     boxShadow: "0 8px 40px rgba(226, 36, 42, 0.4)",
                 }}
             >
-                <div className="-rotate-45 w-full h-full flex flex-col items-center justify-center text-white">
+                <div className="-rotate-45 w-full h-full flex flex-col items-center justify-center ruby-content">
                     <p className="text-base sm:text-lg font-semibold tracking-wide text-white/80 mb-2 mt-4">
                         Quick. Secure. Reliable.
                     </p>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-wide leading-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-wide leading-none whitespace-nowrap" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         NanoAlias
                     </h1>
-                    <p className="text-white text-lg sm:text-xl font-medium mt-1 sm:mt-2 mb-4 sm:mb-6 opacity-90">
+                    <p className="text-white text-lg sm:text-xl font-medium mt-1 sm:mt-2 mb-4 sm:mb-6 opacity-90 whitespace-nowrap">
                         ~by{" "}
                         <a
                             href="https://www.linkedin.com/in/abhinav-mathur-669414356"
@@ -240,9 +240,9 @@ export default function Landing() {
                     </p>
                     <button
                         onClick={handleShortenClick}
-                        className="bg-white text-[#E2242A] font-bold px-8 sm:px-10 py-3 sm:py-3.5 rounded-full
+                        className="bg-white text-[#E2242A] font-bold px-6 sm:px-10 py-2.5 sm:py-3.5 rounded-full
                                    hover:bg-gray-100 transition-all duration-200 shadow-md
-                                   hover:scale-105 hover:shadow-lg text-lg sm:text-xl"
+                                   hover:scale-105 hover:shadow-lg text-base sm:text-xl"
                     >
                         Shorten Now
                     </button>

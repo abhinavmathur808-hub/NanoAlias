@@ -167,7 +167,7 @@ export default function Register() {
                 </div>
 
                 {/* Card */}
-                <div className="w-full max-w-md bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl p-8">
+                <div className="w-full max-w-md bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8">
 
                     {/* ─── STEP 1: Registration Form ─── */}
                     {step === 1 && (

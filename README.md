@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/favicon.png" alt="NanoAlias Logo" width="80" />
+  <img src="frontend/src/assets/nanoalias_logo.png" alt="NanoAlias Logo" width="80" />
 </p>
 
 <h1 align="center">NanoAlias</h1>
