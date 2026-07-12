@@ -112,22 +112,24 @@ exports.askAnalytics = async (question, context) => {
 
 const ALIAS_SYSTEM = `You generate short, memorable URL slugs for a link shortener.
 Given a destination URL and (optionally) its page title/description, propose 3 candidate slugs.
+If the title/description are missing, infer the topic from the URL, the site domain and the keyword hints provided — never refuse; always return 3 slugs.
 Rules for every slug:
 - 3 to 24 characters
 - lowercase letters, numbers and single hyphens only
 - no spaces, no leading/trailing hyphen, no consecutive hyphens
 - human-readable and clearly related to the destination
 - avoid generic filler words like "link", "url", "site", "page", "home"
-Return ONLY a JSON array of exactly 3 distinct strings.
+- Never use opaque alphanumeric IDs, hashes, or random query strings from the URL (e.g. video IDs like "dQw4w9WgXcQ"). Only generate readable, descriptive English words based on the title and context.
+Return ONLY a JSON array of exactly 3 distinct strings — a bare array, not an object.
 Example: ["stripe-charges","api-charges","stripe-api"]`;
 
 /**
  * Suggest short, human-readable alias slugs for a destination URL.
  *
- * @param {{ url: string, title?: string, description?: string }} input
+ * @param {{ url: string, title?: string, description?: string, domain?: string, hints?: string[] }} input
  * @returns {Promise<{ ok: true, suggestions: string[] } | { ok: false, status: number, message: string }>}
  */
-exports.suggestAliases = async ({ url, title, description }) => {
+exports.suggestAliases = async ({ url, title, description, domain, hints }) => {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         return {
@@ -145,6 +147,8 @@ exports.suggestAliases = async ({ url, title, description }) => {
         `URL: ${url}`,
         title ? `Title: ${title}` : "",
         description ? `Description: ${description}` : "",
+        domain ? `Site domain: ${domain}` : "",
+        hints?.length ? `URL keyword hints: ${hints.join(", ")}` : "",
     ]
         .filter(Boolean)
         .join("\n");
@@ -208,7 +212,15 @@ exports.suggestAliases = async ({ url, title, description }) => {
                 }
             }
         }
-        if (!Array.isArray(arr)) arr = [];
+        // JSON mode sometimes wraps the list in an object (e.g. {"slugs": [...]})
+        // — previously this was silently discarded, yielding empty suggestions.
+        if (!Array.isArray(arr)) {
+            if (arr && typeof arr === "object") {
+                arr = Object.values(arr).find(Array.isArray) || [];
+            } else {
+                arr = [];
+            }
+        }
 
         return { ok: true, suggestions: arr.map(String) };
     } catch (err) {

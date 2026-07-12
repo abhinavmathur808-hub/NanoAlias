@@ -5,7 +5,7 @@ const { generateShortCode } = require("../utils/generateNanoId");
 const { cacheUrlData, getCachedUrlData, invalidateCache } = require("../services/redisService");
 const { logClick } = require("../services/analyticsService");
 const { checkUrlSafety } = require("../services/safeBrowsingService");
-const { fetchUrlMetadata } = require("../services/metadataService");
+const { fetchUrlMetadata, buildUrlHints } = require("../services/metadataService");
 const { suggestAliases } = require("../services/geminiService");
 const AppError = require("../utils/AppError");
 
@@ -88,6 +88,90 @@ exports.createShortUrl = async (req, res, next) => {
     }
 };
 
+const normalizeSlug = (raw) =>
+    String(raw)
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 24);
+
+const filterAvailable = async (slugs) => {
+    if (!slugs.length) return [];
+    const taken = await Url.find({
+        $or: [{ shortCode: { $in: slugs } }, { customAlias: { $in: slugs } }],
+    }).select("shortCode customAlias");
+
+    const takenSet = new Set();
+    taken.forEach((u) => {
+        takenSet.add(u.shortCode);
+        if (u.customAlias) takenSet.add(u.customAlias);
+    });
+    return slugs.filter((s) => !takenSet.has(s));
+};
+
+// Filler/noise words that shouldn't spend one of the 3-5 slug word slots.
+const TITLE_STOP_WORDS = new Set([
+    "the", "a", "an", "and", "or", "but", "of", "to", "in", "on", "for",
+    "with", "by", "at", "from", "is", "are", "was", "be", "this", "that",
+    "it", "its", "your", "you", "my", "our", "how", "what", "why",
+    // media-title noise
+    "official", "video", "lyric", "lyrics", "audio", "hd", "remaster",
+    "remastered", "feat", "ft", "trailer", "full",
+]);
+
+// Tier 2 fallback: slugify a scraped page title into up to 3 variants of
+// its first 3-5 meaningful words (e.g. "Rick Astley - Never Gonna Give You
+// Up (Official Video)" → "rick-astley-never", "rick-astley-never-gonna", …).
+const buildTitleSlugs = (title) => {
+    const words = String(title)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]+/g, " ")
+        .split(/\s+/)
+        .filter((w) => w.length >= 2 && !TITLE_STOP_WORDS.has(w) && !/^\d+$/.test(w));
+
+    const out = [];
+    for (const count of [3, 4, 5]) {
+        let slug = "";
+        for (const w of words.slice(0, count)) {
+            const next = slug ? `${slug}-${w}` : w;
+            if (next.length > 24) break;
+            slug = next;
+        }
+        if (slug.length >= 3 && !out.includes(slug)) out.push(slug);
+    }
+    return out;
+};
+
+// Domains whose raw name reads poorly in a slug (e.g. "youtu-x7k2") —
+// substitute a natural word for fallback slug building.
+const FALLBACK_DOMAIN_WORDS = {
+    youtu: "video",
+    youtube: "video",
+};
+
+// Deterministic slugs derived from the URL itself — used to top up the list
+// when the AI returns nothing usable (opaque URLs, odd responses).
+const buildFallbackSlugs = (hints) => {
+    const base = FALLBACK_DOMAIN_WORDS[hints.domain] || hints.domain;
+    const out = [];
+    const push = (s) => {
+        const slug = normalizeSlug(s);
+        if (slug.length >= 3 && !out.includes(slug)) out.push(slug);
+    };
+    for (const w of hints.words) {
+        push(w);
+        if (base) push(`${base}-${w}`);
+        if (out.length >= 6) break;
+    }
+    if (base) {
+        push(base);
+        push(`${base}-${generateShortCode(4)}`);
+        push(`${base}-${generateShortCode(4)}`);
+    }
+    return out;
+};
+
 exports.suggestAlias = async (req, res, next) => {
     try {
         const { originalUrl } = req.body;
@@ -97,44 +181,52 @@ exports.suggestAlias = async (req, res, next) => {
         }
 
         const metadata = await fetchUrlMetadata(originalUrl);
+        const hints = buildUrlHints(originalUrl);
 
+        // ── Tier 1: AI-generated slugs ──
+        let available = [];
+        let source = "ai";
         const result = await suggestAliases({
             url: originalUrl,
             title: metadata.title,
             description: metadata.description,
+            domain: hints.domain,
+            hints: hints.words,
         });
-        if (!result.ok) {
+        if (result.ok) {
+            const cleaned = [];
+            for (const raw of result.suggestions) {
+                const slug = normalizeSlug(raw);
+                if (slug.length >= 3 && !cleaned.includes(slug)) cleaned.push(slug);
+            }
+            available = await filterAvailable(cleaned);
+        } else if (result.status === 503) {
+            // Not configured — surface it so the operator knows, rather than
+            // silently masking a missing API key with programmatic slugs.
             return next(new AppError(result.message, result.status));
+        } else {
+            // Quota (429) / upstream errors degrade to the programmatic tiers.
+            source = "fallback";
         }
 
-        // Normalise each candidate to a valid slug and drop malformed/dupes.
-        const cleaned = [];
-        for (const raw of result.suggestions) {
-            const slug = String(raw)
-                .toLowerCase()
-                .replace(/[^a-z0-9-]+/g, "-")
-                .replace(/-+/g, "-")
-                .replace(/^-|-$/g, "")
-                .slice(0, 24);
-            if (slug.length >= 3 && !cleaned.includes(slug)) cleaned.push(slug);
+        // ── Tier 2: slugs derived from the scraped page title ──
+        if (available.length < 3 && metadata.title) {
+            const t2 = buildTitleSlugs(metadata.title).filter((s) => !available.includes(s));
+            available = [...available, ...(await filterAvailable(t2))];
         }
 
-        // Keep only slugs that aren't already taken.
-        let available = cleaned;
-        if (cleaned.length) {
-            const taken = await Url.find({
-                $or: [{ shortCode: { $in: cleaned } }, { customAlias: { $in: cleaned } }],
-            }).select("shortCode customAlias");
-
-            const takenSet = new Set();
-            taken.forEach((u) => {
-                takenSet.add(u.shortCode);
-                if (u.customAlias) takenSet.add(u.customAlias);
-            });
-            available = cleaned.filter((s) => !takenSet.has(s));
+        // ── Tier 3: deterministic domain/URL-hint slugs — never-empty net ──
+        if (available.length < 3) {
+            const t3 = buildFallbackSlugs(hints).filter((s) => !available.includes(s));
+            available = [...available, ...(await filterAvailable(t3))];
         }
 
-        res.json({ success: true, suggestions: available, title: metadata.title || null });
+        res.json({
+            success: true,
+            suggestions: available.slice(0, 3),
+            title: metadata.title || null,
+            source,
+        });
     } catch (err) {
         next(err);
     }
